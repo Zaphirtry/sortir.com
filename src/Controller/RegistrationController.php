@@ -28,9 +28,15 @@ class RegistrationController extends AbstractController
             // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
+            $date = new \DateTimeImmutable('now');
+            $user->setDateCreated($date);
+
+
+
             $entityManager->persist($user);
             $entityManager->flush();
-
+            //ajout d'un message flash
+            $this->addFlash('success',"Compte créé ! Bienvenue !");
             // do anything else you need here, like send an email
 
             return $security->login($user, 'form_login', 'main');

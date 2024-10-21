@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_PSEUDO', fields: ['pseudo'])]
@@ -19,6 +20,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\Length(min: 2, max: 50,minMessage: "Votre pseudo doit contenir minimum {{ limit }} charactères",maxMessage:"Votre pseudo doit contenir maximum {{ limit }} charactères" )]
     #[ORM\Column(length: 180)]
     private ?string $pseudo = null;
 
@@ -32,15 +34,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\Regex(
+      pattern: '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/',
+      message: 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre.'
+    )]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(min: 2, max: 50,minMessage: "Votre prenom doit contenir minimum {{ limit }} charactères",maxMessage:"Votre prenom doit contenir maximum {{ limit }} charactères" )]
     private ?string $prenom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(min: 2, max: 50,minMessage: "Votre nom doit contenir minimum {{ limit }} charactères",maxMessage:"Votre nom doit contenir maximum {{ limit }} charactères" )]
     private ?string $nom = null;
 
     #[ORM\Column]
+    #[Assert\Regex(
+      pattern: '/^[1-9]\d{8}$/',
+      message: 'Le numéro de téléphone doit être un numéro valide à 10 chiffres commençant par 0.'
+    )]
     private ?int $telephone = null;
 
     #[ORM\Column(length: 255)]
