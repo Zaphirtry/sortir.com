@@ -11,8 +11,18 @@ use Symfony\Component\Routing\Attribute\Route;
 class MainController extends AbstractController
 {
     #[Route('/', name: 'main_home', methods: ['GET'])]
-    public function index(): Response
+    public function home(): Response
     {
-        return $this->render('main/home.html.twig');
+//        $sorties = $sortieRepository->findAll();
+
+        return $this->render('main/home.html.twig',[
+//            'sorties' => $sorties
+        ]);
+    }
+
+    #[Route('/sortie', name: 'main_show', methods: ['GET'])]
+    public function show(): Response
+    {
+        return $this->render('sorties/show.html.twig');
     }
 }
