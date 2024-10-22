@@ -20,12 +20,13 @@
             {% include '_navbar.html.twig' %}
         </header>
         <main class="container">
-        {% block body %}
           {% for label,messages in app.flashes %}
             {% for message in messages %}
               <div class="alert alert-{{ label }}" role="alert">{{ message }}</div>
             {% endfor %}
           {% endfor %}
+        {% block body %}
+
         <h1>Bienvenue sur le projet symfony</h1>
         {% endblock %}
           </main>
