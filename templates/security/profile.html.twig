@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1> Profile de {{ user.pseudo }}</h1>
+
+  {{ form_errors(userForm) }}
+  {{ form_start(userForm, {'attr': {'data-turbo': 'false'}}) }}
+  {{ form_widget(userForm) }}
+  <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+  {{ form_end(userForm) }}
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+
+
