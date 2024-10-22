@@ -16,6 +16,7 @@
                         <th>Date limite d'inscription</th>
                         <th>Inscrits/Places</th>
                         <th>État</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,6 +27,12 @@
                         <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
                         <td>2(test)/{{ sortie.nbInscriptionsMax }}</td>
                         <td><span class="badge bg-info">{{ sortie.etat }}</span></td>
+                        <td>
+                            <a href="{{ path('sortie_show', {'id': sortie.id}) }}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-eye"></i> Afficher
+                            </a>
+                            {# TODO: Ajouter les boutons d'actions : Se désister, S'inscrire, Modifier, Annuler #}
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

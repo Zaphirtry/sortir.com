@@ -1,5 +1,6 @@
 body {
     background-color: #f8f9fa;
+    min-height: 100vh;
 }
 
 .navbar {
@@ -8,6 +9,10 @@ body {
 
 .card {
     box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+}
+
+main {
+    flex: 1 0 auto;
 }
 
 /* Ajoutez ici d'autres styles personnalisés si nécessaire */
