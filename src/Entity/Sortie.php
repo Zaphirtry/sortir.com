@@ -40,6 +40,11 @@ class Sortie
     #[ORM\Column]
     private ?\DateTimeImmutable $dateModified = null;
 
+    public function __construct()
+    {
+        $this->dateCreated = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;

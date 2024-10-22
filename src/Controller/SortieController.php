@@ -1,43 +1,74 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Controller;
 
+use App\Entity\Sortie;
+use App\Form\SortieType;
+use App\Repository\SortieRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/sortie')]
-class SortieController extends AbstractController
+final class SortieController extends AbstractController
 {
+    #[Route('/créer', name: 'sortie_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $sortie = new Sortie();
+        $form = $this->createForm(SortieType::class, $sortie);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($sortie);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('main_home', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('sortie/new.html.twig', [
+            'sortie' => $sortie,
+            'form' => $form,
+        ]);
+    }
+
     #[Route('/{id}', name: 'sortie_show', methods: ['GET'])]
-    public function show(): Response
+    public function show(Sortie $sortie): Response
     {
-        return $this->render('sorties/show.html.twig');
+        return $this->render('sortie/show.html.twig', [
+            'sortie' => $sortie,
+        ]);
     }
 
-    #[Route('/{id}', name: 'sortie_create', methods: ['GET', 'POST'])]
-    public function create(): Response
+    #[Route('/{id}/modifier', name: 'sortie_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
     {
-        return $this->render('sorties/create.html.twig');
+        $form = $this->createForm(SortieType::class, $sortie);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $sortie->setDateModified(new \DateTimeImmutable());
+            $entityManager->flush();
+
+            return $this->redirectToRoute('main_home', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('sortie/edit.html.twig', [
+            'sortie' => $sortie,
+            'form' => $form,
+        ]);
     }
 
-    #[Route('/{id}/modifier', name: 'sortie_update', methods: ['GET', 'POST'])]
-    public function update(): Response
+    #[Route('/{id}', name: 'app_sortie_delete', methods: ['POST'])]
+    public function delete(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
     {
-        return $this->render('sorties/update.html.twig');
-    }
+        if ($this->isCsrfTokenValid('delete'.$sortie->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($sortie);
+            $entityManager->flush();
+        }
 
-    #[Route('/{id}/annuler', name: 'sortie_cancel', methods: ['GET', 'POST'])]
-    public function cancel(): Response
-    {
-        return $this->render('sorties/cancel.html.twig');
-    }
-
-    #[Route('/{id}/supprimer', name: 'sortie_delete', methods: ['GET', 'POST'])]
-    public function delete(): Response
-    {
-        return $this->redirectToRoute('main_home');
+        return $this->redirectToRoute('main_home', [], Response::HTTP_SEE_OTHER);
     }
 }
