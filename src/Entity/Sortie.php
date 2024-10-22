@@ -18,21 +18,27 @@ class Sortie
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank()]
     private ?string $nom = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank()]
     private ?\DateTimeImmutable $dateHeureDebut = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank()]
     private ?\DateInterval $duree = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank()]
     private ?\DateTimeImmutable $dateLimiteInscription = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank()]
     private ?int $nbInscriptionsMax = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank()]
     private ?int $nombreInscrits = null;
 
     #[ORM\Column(type: Types::TEXT, nullable:true)]
@@ -52,6 +58,7 @@ class Sortie
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+//    Est ce qu'on doit selectionner dans une liste ou il faut taper '
     private ?user $organisateur = null;
 
     /**
