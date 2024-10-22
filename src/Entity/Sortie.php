@@ -3,7 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\SortieRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -31,7 +33,13 @@ class Sortie
     #[ORM\Column]
     private ?int $nombreInscrits = null;
 
-    #[ORM\Column(length: 500)]
+    #[ORM\Column(type: Types::TEXT, nullable:true)]
+    #[Assert\Length(
+        min: 3,
+        max: 180,
+        minMessage: 'La description doit avoit au moins 3 caractères',
+        maxMessage: 'La description doit avoit au maximum 255 caractères'
+    )]
     private ?string $infosSortie = null;
 
     #[ORM\Column(length: 255)]
