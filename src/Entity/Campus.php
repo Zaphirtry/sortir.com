@@ -23,7 +23,7 @@ class Campus
     #[ORM\Column]
     private ?\DateTimeImmutable $dateCreated = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $dateModified = null;
 
     /**

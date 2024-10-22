@@ -27,7 +27,7 @@ class Sortie
 
     #[ORM\Column]
     #[Assert\NotBlank()]
-    private ?\int $duree = null;
+    private ?int $duree = null;
 
     #[ORM\Column]
     #[Assert\NotBlank()]
@@ -59,25 +59,25 @@ class Sortie
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
 //    Est ce qu'on doit selectionner dans une liste ou il faut taper '
-    private ?user $organisateur = null;
+    private ?User $organisateur = null;
 
     /**
-     * @var Collection<int, user>
+     * @var Collection<int, User>
      */
-    #[ORM\ManyToMany(targetEntity: user::class, inversedBy: 'participation')]
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'participation')]
     private Collection $participant;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?campus $campus = null;
+    private ?Campus $campus = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?lieu $lieu = null;
+    private ?Lieu $lieu = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?etat $etat = null;
+    private ?Etat $etat = null;
 
     public function __construct()
     {
@@ -199,12 +199,12 @@ class Sortie
         return $this;
     }
 
-    public function getOrganisateur(): ?user
+    public function getOrganisateur(): ?User
     {
         return $this->organisateur;
     }
 
-    public function setOrganisateur(?user $organisateur): static
+    public function setOrganisateur(?User $organisateur): static
     {
         $this->organisateur = $organisateur;
 
@@ -212,14 +212,14 @@ class Sortie
     }
 
     /**
-     * @return Collection<int, user>
+     * @return Collection<int, User>
      */
     public function getParticipant(): Collection
     {
         return $this->participant;
     }
 
-    public function addParticipant(user $participant): static
+    public function addParticipant(User $participant): static
     {
         if (!$this->participant->contains($participant)) {
             $this->participant->add($participant);
@@ -228,43 +228,43 @@ class Sortie
         return $this;
     }
 
-    public function removeParticipant(user $participant): static
+    public function removeParticipant(User $participant): static
     {
         $this->participant->removeElement($participant);
 
         return $this;
     }
 
-    public function getCampus(): ?campus
+    public function getCampus(): ?Campus
     {
         return $this->campus;
     }
 
-    public function setCampus(?campus $campus): static
+    public function setCampus(?Campus $campus): static
     {
         $this->campus = $campus;
 
         return $this;
     }
 
-    public function getLieu(): ?lieu
+    public function getLieu(): ?Lieu
     {
         return $this->lieu;
     }
 
-    public function setLieu(?lieu $lieu): static
+    public function setLieu(?Lieu $lieu): static
     {
         $this->lieu = $lieu;
 
         return $this;
     }
 
-    public function getEtat(): ?etat
+    public function getEtat(): ?Etat
     {
         return $this->etat;
     }
 
-    public function setEtat(?etat $etat): static
+    public function setEtat(?Etat $etat): static
     {
         $this->etat = $etat;
 

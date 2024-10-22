@@ -32,7 +32,7 @@ class Lieu
     #[ORM\Column]
     private ?\DateTimeImmutable $dateCreated = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $dateModified = null;
 
     /**
@@ -43,7 +43,7 @@ class Lieu
 
     #[ORM\ManyToOne(inversedBy: 'lieus')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?ville $ville = null;
+    private ?Ville $ville = null;
 
     public function __construct()
     {
@@ -157,12 +157,12 @@ class Lieu
         return $this;
     }
 
-    public function getVille(): ?ville
+    public function getVille(): ?Ville
     {
         return $this->ville;
     }
 
-    public function setVille(?ville $ville): static
+    public function setVille(?Ville $ville): static
     {
         $this->ville = $ville;
 
