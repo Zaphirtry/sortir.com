@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ville index{% endblock %}
+
+{% block body %}
+    <h1>Ville index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>CodePostal</th>
+                <th>DateCreated</th>
+                <th>DateModified</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ville in villes %}
+            <tr>
+                <td>{{ ville.id }}</td>
+                <td>{{ ville.nom }}</td>
+                <td>{{ ville.codePostal }}</td>
+                <td>{{ ville.dateCreated ? ville.dateCreated|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ ville.dateModified ? ville.dateModified|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('ville_edit', {'id': ville.id}) }}">show</a>
+                    <a href="{{ path('ville_edit', {'id': ville.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('ville_new') }}">Create new</a>
+{% endblock %}

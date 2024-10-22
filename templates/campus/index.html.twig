@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Campus index{% endblock %}
+
+{% block body %}
+    <h1>Campus index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>DateCreated</th>
+                <th>DateModified</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for campus in campuses %}
+            <tr>
+                <td>{{ campus.id }}</td>
+                <td>{{ campus.nom }}</td>
+                <td>{{ campus.dateCreated ? campus.dateCreated|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ campus.dateModified ? campus.dateModified|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('campus_show', {'id': campus.id}) }}">show</a>
+                    <a href="{{ path('campus_edit', {'id': campus.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('campus_new') }}">Create new</a>
+{% endblock %}

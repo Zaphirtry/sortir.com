@@ -27,7 +27,7 @@ class Sortie
 
     #[ORM\Column]
     #[Assert\NotBlank()]
-    private ?\DateInterval $duree = null;
+    private ?\int $duree = null;
 
     #[ORM\Column]
     #[Assert\NotBlank()]
@@ -81,8 +81,10 @@ class Sortie
 
     public function __construct()
     {
-        $this->participant = new ArrayCollection();
+      $this->participant = new ArrayCollection();
+      $this->dateCreated = new \DateTimeImmutable();
     }
+
 
     public function getId(): ?int
     {
@@ -113,12 +115,12 @@ class Sortie
         return $this;
     }
 
-    public function getDuree(): ?\DateInterval
+    public function getDuree(): ?int
     {
         return $this->duree;
     }
 
-    public function setDuree(\DateInterval $duree): static
+    public function setDuree(int $duree): static
     {
         $this->duree = $duree;
 

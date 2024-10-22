@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la Sortie | {{ parent() }}{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h1 class="mb-0">Détails de la Sortie</h1>
+            <div>
+                <a href="{{ path('main_home') }}" class="btn btn-light btn-sm me-2">
+                    <i class="bi bi-arrow-left"></i> Retour à la liste
+                </a>
+                <a href="{{ path('sortie_edit', {'id': sortie.id}) }}" class="btn btn-warning btn-sm">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <th class="w-25">Nom</th>
+                        <td>{{ sortie.nom }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date et heure de début</th>
+                        <td>{{ sortie.dateHeureDebut ? sortie.dateHeureDebut|date('d/m/Y H:i') : 'Non défini' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Durée</th>
+                        <td>{{ sortie.duree }} minutes</td>
+                    </tr>
+                    <tr>
+                        <th>Date limite d'inscription</th>
+                        <td>{{ sortie.dateLimiteInscription ? sortie.dateLimiteInscription|date('d/m/Y') : 'Non défini' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nombre maximum d'inscrits</th>
+                        <td>{{ sortie.nbInscriptionsMax }}</td>
+                    </tr>
+                    <tr>
+                        <th>Informations</th>
+                        <td>{{ sortie.infosSortie }}</td>
+                    </tr>
+                    <tr>
+                        <th>État</th>
+                        <td><span class="badge bg-info">{{ sortie.etat }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>Date de création</th>
+                        <td>{{ sortie.dateCreated ? sortie.dateCreated|date('d/m/Y H:i') : 'Non défini' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Date de modification</th>
+                        <td>{{ sortie.dateModified ? sortie.dateModified|date('d/m/Y H:i') : 'Non défini' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="text-center pt-3">
+        {{ include('sortie/_delete_form.html.twig') }}
+    </div>
+{% endblock %}

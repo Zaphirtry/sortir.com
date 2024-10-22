@@ -1,36 +1,36 @@
-<div class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{{ path('main_home') }}">
-            <img src="{{ asset('images/logo_test.png') }}" alt="Logo sortir.com" class="me-2" style="height: 60px;">
+            <img src="{{ asset('images/logo_test.png') }}" alt="Logo sortir.com" class="me-2" style="height: 40px;">
             <span class="fs-4">Sortir.com</span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('admin_villes') }}">Villes</a>
+                    <a class="nav-link" href="{{ path('main_home') }}"><i class="bi bi-house-door"></i> Accueil</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('main_show') }}">Sortie</a>
+                    <a class="nav-link" href="{{ path('admin_villes') }}"><i class="bi bi-building"></i> Villes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('admin_campus') }}">Campus</a>
+                    <a class="nav-link" href="{{ path('admin_campus') }}"><i class="bi bi-geo-alt"></i> Campus</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('main_home') }}">Accueil</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Mon Profil</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_logout') }}">Se déconnecter</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ path('app_login') }}">Se connecter</a>
-                </li>
+                {% if app.user %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-person"></i> Mon Profil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_logout') }}"><i class="bi bi-box-arrow-right"></i> Se déconnecter</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_login') }}"><i class="bi bi-box-arrow-in-right"></i> Se connecter</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>
-</div>
+</nav>
