@@ -1,34 +1,76 @@
-{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+{{ form_start(form, {'attr': {'class': disabled|default(false) ? '' : 'needs-validation', 'novalidate': disabled|default(false) ? false : 'novalidate'}}) }}
     <div class="row">
-        <div class="col-md-6 mb-3">
-            {{ form_row(form.nom, {'attr': {'class': 'form-control'}}) }}
+        <div class="col-md-6">
+            {# Colonne gauche #}
+            <div class="mb-3">
+                {{ form_row(form.nom, {'attr': {'class': 'form-control', 'readonly': disabled|default(false)}}) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.dateHeureDebut, {'attr': {'class': 'form-control', 'readonly': disabled|default(false)}}) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.dateLimiteInscription, {'attr': {'class': 'form-control', 'readonly': disabled|default(false)}}) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.nbInscriptionsMax, {'attr': {'class': 'form-control', 'readonly': disabled|default(false)}}) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.duree, {'attr': {'class': 'form-control', 'readonly': disabled|default(false)}}) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.infosSortie, {'attr': {'class': 'form-control', 'rows': 3, 'readonly': disabled|default(false)}}) }}
+            </div>
         </div>
-        <div class="col-md-6 mb-3">
-            {{ form_row(form.dateHeureDebut, {'attr': {'class': 'form-control'}}) }}
+        
+        <div class="col-md-6">
+            {# Colonne droite #}
+            <div class="mb-3">
+                <label class="form-label">Campus</label>
+                <label>
+                    <input type="text" class="form-control" value="{{ app.user.campus.nom }}" disabled>
+                </label>
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.ville, {
+                    'attr': {
+                        'class': 'form-control',
+                        'data-ville-url': path('api_ville_lieux', {'id': '__id__'}),
+                        'readonly': disabled|default(false)
+                    }
+                }) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.lieu, {
+                    'attr': {
+                        'class': 'form-control',
+                        'disabled': 'disabled'
+                    }
+                }) }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Rue</label>
+                <label for="lieu-rue"></label><input type="text" class="form-control" id="lieu-rue" disabled>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Code postal</label>
+                <label for="lieu-code-postal"></label><input type="text" class="form-control" id="lieu-code-postal" disabled>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Latitude</label>
+                <label for="lieu-latitude"></label><input type="text" class="form-control" id="lieu-latitude" disabled>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Longitude</label>
+                <label for="lieu-longitude"></label><input type="text" class="form-control" id="lieu-longitude" disabled>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            {{ form_row(form.duree, {'attr': {'class': 'form-control'}}) }}
+
+    {% if button_label is not same as(false) %}
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle"></i> {{ button_label|default('Enregistrer') }}
+            </button>
         </div>
-        <div class="col-md-6 mb-3">
-            {{ form_row(form.dateLimiteInscription, {'attr': {'class': 'form-control'}}) }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            {{ form_row(form.nbInscriptionsMax, {'attr': {'class': 'form-control'}}) }}
-        </div>
-        <div class="col-md-6 mb-3">
-            {{ form_row(form.etat, {'attr': {'class': 'form-control'}}) }}
-        </div>
-    </div>
-    <div class="mb-3">
-        {{ form_row(form.infosSortie, {'attr': {'class': 'form-control', 'rows': 3}}) }}
-    </div>
-    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <button type="submit" class="btn btn-primary">
-            <i class="bi bi-check-circle"></i> {{ button_label|default('Enregistrer') }}
-        </button>
-    </div>
+    {% endif %}
 {{ form_end(form) }}

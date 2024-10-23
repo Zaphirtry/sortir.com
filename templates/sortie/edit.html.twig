@@ -18,3 +18,20 @@
         </div>
     </div>
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/sortie-form.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            FormHandler.init({
+                villeSelect: '#{{ form.ville.vars.id }}',
+                lieuSelect: '#{{ form.lieu.vars.id }}',
+                rueInput: '#lieu-rue',
+                codePostalInput: '#lieu-code-postal',
+                latitudeInput: '#lieu-latitude',
+                longitudeInput: '#lieu-longitude'
+            });
+        });
+    </script>
+{% endblock %}

@@ -16,49 +16,30 @@
             </div>
         </div>
         <div class="card-body">
-            <table class="table table-striped">
-                <tbody>
-                    <tr>
-                        <th class="w-25">Nom</th>
-                        <td>{{ sortie.nom }}</td>
-                    </tr>
-                    <tr>
-                        <th>Date et heure de début</th>
-                        <td>{{ sortie.dateHeureDebut ? sortie.dateHeureDebut|date('d/m/Y H:i') : 'Non défini' }}</td>
-                    </tr>
-                    <tr>
-                        <th>Durée</th>
-                        <td>{{ sortie.duree }} minutes</td>
-                    </tr>
-                    <tr>
-                        <th>Date limite d'inscription</th>
-                        <td>{{ sortie.dateLimiteInscription ? sortie.dateLimiteInscription|date('d/m/Y') : 'Non défini' }}</td>
-                    </tr>
-                    <tr>
-                        <th>Nombre maximum d'inscrits</th>
-                        <td>{{ sortie.nbInscriptionsMax }}</td>
-                    </tr>
-                    <tr>
-                        <th>Informations</th>
-                        <td>{{ sortie.infosSortie }}</td>
-                    </tr>
-                    <tr>
-                        <th>État</th>
-                        <td><span class="badge bg-info">{{ sortie.etat.libelle }}</span></td>
-                    </tr>
-                    <tr>
-                        <th>Date de création</th>
-                        <td>{{ sortie.dateCreated ? sortie.dateCreated|date('d/m/Y H:i') : 'Non défini' }}</td>
-                    </tr>
-                    <tr>
-                        <th>Date de modification</th>
-                        <td>{{ sortie.dateModified ? sortie.dateModified|date('d/m/Y H:i') : 'Non défini' }}</td>
-                    </tr>
-                </tbody>
-            </table>
+            {{ include('sortie/_form.html.twig', {
+                'button_label': false,
+                'disabled': true
+            }) }}
+        </div>
+        <div class="card-footer text-end">
+            {{ include('sortie/_delete_form.html.twig') }}
         </div>
     </div>
-    <div class="text-center pt-3">
-        {{ include('sortie/_delete_form.html.twig') }}
-    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/sortie-form.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            FormHandler.init({
+                villeSelect: '#{{ form.ville.vars.id }}',
+                lieuSelect: '#{{ form.lieu.vars.id }}',
+                rueInput: '#lieu-rue',
+                codePostalInput: '#lieu-code-postal',
+                latitudeInput: '#lieu-latitude',
+                longitudeInput: '#lieu-longitude'
+            });
+        });
+    </script>
 {% endblock %}

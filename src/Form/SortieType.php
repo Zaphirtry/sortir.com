@@ -2,7 +2,9 @@
 
 namespace App\Form;
 
+use App\Entity\Lieu;
 use App\Entity\Sortie;
+use App\Entity\Ville;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -47,6 +49,19 @@ class SortieType extends AbstractType
             ])
             ->add('infosSortie', TextareaType::class, [
                 'label' => 'Description et infos',
+            ])
+            ->add('ville', EntityType::class, [
+                'class' => Ville::class,
+                'choice_label' => 'nom',
+                'mapped' => false,
+                'placeholder' => 'Sélectionnez une ville',
+                'required' => false,
+            ])
+            ->add('lieu', EntityType::class, [
+                'class' => Lieu::class,
+                'choice_label' => 'nom',
+                'placeholder' => 'Sélectionnez d\'abord une ville',
+                'required' => true,
             ])
             ->add('etat', EntityType::class, [
                 'label' => 'État',
