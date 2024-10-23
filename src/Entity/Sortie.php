@@ -18,7 +18,7 @@ class Sortie
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank(message:"Veuillez saisir un nom")]
     #[Assert\Length(
         min: 3,
         max: 100,
@@ -29,7 +29,7 @@ class Sortie
 
     #[ORM\Column]
     #[Assert\NotBlank(message:"Veuillez indiquer une date et une heure")]
-    #[Assert\Assert\DateTime()]
+    #[Assert\Type("\DateTimeImmutable")]
     private ?\DateTimeImmutable $dateHeureDebut = null;
 
     #[ORM\Column]
@@ -39,11 +39,11 @@ class Sortie
 
     #[ORM\Column]
     #[Assert\NotBlank(message:"Veuillez indiquer la date de fin d'inscription")]
-    #[Assert\DateTime]
+    #[Assert\Type("\DateTimeImmutable")]
     private ?\DateTimeImmutable $dateLimiteInscription = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank(message:"Veuillez mettre un nombre")]
     #[Assert\Positive]
     private ?int $nbInscriptionsMax = null;
 
@@ -68,7 +68,6 @@ class Sortie
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
-//    Est ce qu'on doit selectionner dans une liste ou il faut taper '
     private ?User $organisateur = null;
 
     /**
@@ -79,10 +78,12 @@ class Sortie
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message:"Veuillez indiquer le campus")]
     private ?Campus $campus = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message:"Veuillez indiquer un lieu")]
     private ?Lieu $lieu = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
@@ -118,7 +119,7 @@ class Sortie
         return $this->dateHeureDebut;
     }
 
-    public function setDateHeureDebut(\DateTimeImmutable $dateHeureDebut): static
+    public function setDateHeureDebut(?\DateTimeImmutable $dateHeureDebut): static
     {
         $this->dateHeureDebut = $dateHeureDebut;
 
@@ -142,7 +143,7 @@ class Sortie
         return $this->dateLimiteInscription;
     }
 
-    public function setDateLimiteInscription(\DateTimeImmutable $dateLimiteInscription): static
+    public function setDateLimiteInscription(?\DateTimeImmutable $dateLimiteInscription): static
     {
         $this->dateLimiteInscription = $dateLimiteInscription;
 
