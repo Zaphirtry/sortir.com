@@ -19,25 +19,36 @@ class Sortie
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank()]
+    #[Assert\Length(
+        min: 3,
+        max: 100,
+        minMessage: 'Le nom doit avoit au moins 3 caractères',
+        maxMessage: 'Le nom doit avoit au maximum 100 caractères'
+    )]
     private ?string $nom = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank(message:"Veuillez indiquer une date et une heure")]
+    #[Assert\Assert\DateTime()]
     private ?\DateTimeImmutable $dateHeureDebut = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank(message:"Veuillez indiquer la duree de l'evenement")]
+    #[Assert\Positive]
     private ?int $duree = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank(message:"Veuillez indiquer la date de fin d'inscription")]
+    #[Assert\DateTime]
     private ?\DateTimeImmutable $dateLimiteInscription = null;
 
     #[ORM\Column]
     #[Assert\NotBlank()]
+    #[Assert\Positive]
     private ?int $nbInscriptionsMax = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Positive]
     private ?int $nombreInscrits = null;
 
     #[ORM\Column(type: Types::TEXT, nullable:true)]
@@ -49,10 +60,10 @@ class Sortie
     )]
     private ?string $infosSortie = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $dateCreated = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $dateModified = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]

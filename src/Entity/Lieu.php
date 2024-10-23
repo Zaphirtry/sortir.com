@@ -17,11 +17,12 @@ class Lieu
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank(message:"Veuillez indiquer la ville")]
+
     private ?string $nom = null;
 
     #[ORM\Column(length: 500)]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank(message:"Veuillez indiquer l'adresse")]
     private ?string $rue = null;
 
     #[ORM\Column]
@@ -30,10 +31,10 @@ class Lieu
     #[ORM\Column]
     private ?float $longitude = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $dateCreated = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $dateModified = null;
 
     /**

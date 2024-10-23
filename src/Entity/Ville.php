@@ -17,15 +17,23 @@ class Ville
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message:"Veuillez indiquer la ville")]
     private ?string $nom = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message:"Veuillez indiquer le code postal")]
+    #[Assert\Positive]
+    #[Assert\Range(
+        min: 10000,
+        max: 99999,
+        notInRangeMessage: "Le code postal doit être composé de 5 chiffres."
+    )]
     private ?int $codePostal = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATE_IMMUTABLE)]
     private ?\DateTimeImmutable $dateCreated = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $dateModified = null;
 
     /**
