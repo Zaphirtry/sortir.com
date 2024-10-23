@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\VilleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -17,15 +18,23 @@ class Ville
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message:"Veuillez indiquer la ville")]
     private ?string $nom = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message:"Veuillez indiquer le code postal")]
+    #[Assert\Positive]
+    #[Assert\Range(
+        min: 1000,
+        max: 99999,
+        notInRangeMessage: "Le code postal doit être composé de 5 chiffres."
+    )]
     private ?int $codePostal = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $dateCreated = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $dateModified = null;
 
     /**

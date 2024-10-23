@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\LieuRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -17,11 +18,12 @@ class Lieu
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank(message:"Veuillez indiquer la ville")]
+
     private ?string $nom = null;
 
     #[ORM\Column(length: 500)]
-    #[Assert\NotBlank()]
+    #[Assert\NotBlank(message:"Veuillez indiquer l'adresse")]
     private ?string $rue = null;
 
     #[ORM\Column]
@@ -30,10 +32,10 @@ class Lieu
     #[ORM\Column]
     private ?float $longitude = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $dateCreated = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $dateModified = null;
 
     /**

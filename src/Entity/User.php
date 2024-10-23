@@ -79,7 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $participation;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
-    private ?campus $campus = null;
+    private ?Campus $campus = null;
 
     public function __construct()
     {
