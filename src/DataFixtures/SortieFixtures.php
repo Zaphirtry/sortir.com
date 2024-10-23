@@ -3,45 +3,83 @@
 namespace App\DataFixtures;
 
 use App\Entity\Sortie;
+use App\Entity\Etat;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 class SortieFixtures extends Fixture implements DependentFixtureInterface
 {
+    private function determinerEtat(\DateTime $dateHeureDebut, \DateTime $dateLimiteInscription): Etat
+    {
+        $maintenant = new \DateTime();
+        
+        if ($dateHeureDebut < $maintenant) {
+            return $this->getReference('etat_5'); // Passée
+        } elseif ($dateHeureDebut == $maintenant) {
+            return $this->getReference('etat_4'); // Activité en cours
+        } elseif ($dateLimiteInscription < $maintenant) {
+            return $this->getReference('etat_3'); // Clôturée
+        } else {
+            return $this->getReference('etat_2'); // Ouverte
+        }
+    }
+
     public function load(ObjectManager $manager): void
     {
         $faker = \Faker\Factory::create('fr_FR');
         
-        for ($i = 0; $i < 10; $i++) {
+        // Liste des types d'activités pour générer des noms plus réalistes
+        $typesActivites = [
+            'Soirée',
+            'Concert',
+            'Spectacle',
+            'After-work',
+            'Exposition',
+            'Visite guidée',
+            'Cinéma',
+            'Théâtre',
+            'Festival'
+        ];
+
+        // Création de 30 sorties
+        for ($i = 0; $i < 30; $i++) {
             $sortie = new Sortie();
-            $dateHeureDebut = $faker->dateTimeBetween('now', '+1 month');
-            $sortie->setNom($faker->sentence(3, true))
+            
+            // Génération de dates cohérentes
+            $dateHeureDebut = $faker->dateTimeBetween('-1 month', '+3 months');
+            $dateLimiteInscription = clone $dateHeureDebut;
+            $dateLimiteInscription->modify('-2 days');
+
+            // Sélection de l'organisateur
+            $organisateur = $this->getReference('user_' . $faker->numberBetween(0, 9));
+            
+            // Génération d'un nom plus réaliste
+            $typeActivite = $faker->randomElement($typesActivites);
+            $nom = $typeActivite . ' : ' . $faker->words(3, true);
+
+            $sortie->setNom($nom)
                 ->setDateHeureDebut(\DateTimeImmutable::createFromMutable($dateHeureDebut))
-                ->setDateLimiteInscription(\DateTimeImmutable::createFromMutable($faker->dateTimeBetween(
-                    $dateHeureDebut,
-                    $dateHeureDebut->modify('+1 month')
-                )))
-                ->setNbInscriptionsMax($faker->numberBetween(5, 20))
-                ->setInfosSortie($faker->paragraph(3, true))
-                ->setEtat($this->getReference('etat_' . $faker->numberBetween(1, 6)))
-                ->setDuree($faker->numberBetween(30, 240))
-                ->setOrganisateur($this->getReference('user_' . $faker->numberBetween(0, 9)))
-                ->setCampus($this->getReference('campus_' . $faker->numberBetween(1, 5)))
-                ->setLieu($this->getReference('lieu_1'));
+                ->setDateLimiteInscription(\DateTimeImmutable::createFromMutable($dateLimiteInscription))
+                ->setNbInscriptionsMax($faker->numberBetween(5, 50))
+                ->setInfosSortie($faker->paragraphs(2, true))
+                ->setDuree($faker->randomElement([60, 90, 120, 180, 240])) // Durées plus réalistes
+                ->setOrganisateur($organisateur)
+                ->setCampus($organisateur->getCampus())
+                ->setLieu($this->getReference('lieu_' . $faker->numberBetween(1, 25)))
+                ->setDateCreated(new \DateTimeImmutable())
+                ->setEtat($this->determinerEtat($dateHeureDebut, $dateLimiteInscription));
 
-            // Optionnellement, définissez nombreInscrits
-            if ($faker->boolean) {
-                $sortie->setNombreInscrits($faker->numberBetween(0, $sortie->getNbInscriptionsMax()));
+            // Ajout aléatoire de participants
+            $nbParticipants = $faker->numberBetween(0, min(10, $sortie->getNbInscriptionsMax()));
+            for ($j = 0; $j < $nbParticipants; $j++) {
+                $participant = $this->getReference('user_' . $faker->numberBetween(0, 9));
+                if (!$sortie->getParticipant()->contains($participant)) {
+                    $sortie->addParticipant($participant);
+                }
             }
-
-            $dateCreated = $faker->dateTimeBetween('-6 months', 'now');
-            $sortie->setDateCreated(\DateTimeImmutable::createFromMutable($dateCreated));
-
-            $dateModified = $faker->optional(0.5)->dateTimeBetween($dateCreated, 'now');
-            if ($dateModified) {
-                $sortie->setDateModified(\DateTimeImmutable::createFromMutable($dateModified));
-            }
+            
+            $sortie->setNombreInscrits($sortie->getParticipant()->count());
 
             $manager->persist($sortie);
         }
