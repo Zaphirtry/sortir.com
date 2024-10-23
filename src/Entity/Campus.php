@@ -23,8 +23,8 @@ class Campus
     #[ORM\Column]
     private ?\DateTimeImmutable $dateCreated = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $dateModified = null;
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $dateModified = null;
 
     /**
      * @var Collection<int, User>
@@ -42,6 +42,7 @@ class Campus
     {
         $this->users = new ArrayCollection();
         $this->sorties = new ArrayCollection();
+        $this->dateCreated = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -73,15 +74,14 @@ class Campus
         return $this;
     }
 
-    public function getDateModified(): ?\DateTimeImmutable
+    public function getDateModified(): ?\DateTimeInterface
     {
         return $this->dateModified;
     }
 
-    public function setDateModified(\DateTimeImmutable $dateModified): static
+    public function setDateModified(?\DateTimeInterface $dateModified): self
     {
         $this->dateModified = $dateModified;
-
         return $this;
     }
 

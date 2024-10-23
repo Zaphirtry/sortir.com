@@ -37,8 +37,7 @@ class Sortie
     #[Assert\NotBlank()]
     private ?int $nbInscriptionsMax = null;
 
-    #[ORM\Column]
-    #[Assert\NotBlank()]
+    #[ORM\Column(nullable: true)]
     private ?int $nombreInscrits = null;
 
     #[ORM\Column(type: Types::TEXT, nullable:true)]
@@ -156,7 +155,7 @@ class Sortie
         return $this->nombreInscrits;
     }
 
-    public function setNombreInscrits(int $nombreInscrits): static
+    public function setNombreInscrits(?int $nombreInscrits): static
     {
         $this->nombreInscrits = $nombreInscrits;
 

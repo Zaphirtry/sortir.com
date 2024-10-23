@@ -6,6 +6,7 @@ use App\Repository\EtatRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EtatRepository::class)]
 class Etat
@@ -34,6 +35,7 @@ class Etat
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
+        $this->dateModified = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -105,5 +107,10 @@ class Etat
         }
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->libelle;
     }
 }

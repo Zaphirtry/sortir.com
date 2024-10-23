@@ -85,6 +85,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->sorties = new ArrayCollection();
         $this->participation = new ArrayCollection();
+        $this->dateModified = new \DateTimeImmutable();
     }
 
     public function getId(): ?int

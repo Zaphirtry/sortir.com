@@ -6,6 +6,7 @@ use App\Repository\VilleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: VilleRepository::class)]
 class Ville
@@ -36,6 +37,7 @@ class Ville
     public function __construct()
     {
         $this->lieus = new ArrayCollection();
+        $this->dateModified = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
