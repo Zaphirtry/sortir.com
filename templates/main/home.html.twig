@@ -16,6 +16,8 @@
                         <th>Date limite d'inscription</th>
                         <th>Inscrits/Places</th>
                         <th>État</th>
+                        <th>Inscrit</th>
+                        <th>Organisateur</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -27,6 +29,13 @@
                         <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
                         <td>{{ sortie.nombreInscrits }}/{{ sortie.nbInscriptionsMax }}</td>
                         <td><span class="badge bg-info">{{ sortie.etat.libelle }}</span></td>
+                        <td class="text-center">
+                            {% if app.user in sortie.participant %}
+                                <span class="fw-bold text-success">X</span>
+                            {% endif %}
+                        </td>
+                        <td><a href="{{ path('app_profile', {'pseudo': sortie.organisateur.pseudo}) }}">{{ sortie.organisateur.pseudo }}</a></td>
+
                         <td>
                             <a href="{{ path('sortie_show', {'id': sortie.id}) }}" class="btn btn-sm btn-primary">
                                 <i class="bi bi-eye"></i> Afficher

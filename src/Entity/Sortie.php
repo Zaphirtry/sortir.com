@@ -29,7 +29,7 @@ class Sortie
 
     #[ORM\Column]
     #[Assert\NotBlank(message:"Veuillez indiquer une date et une heure")]
-    #[Assert\Assert\DateTime()]
+    #[Assert\Type("\DateTimeImmutable")]
     private ?\DateTimeImmutable $dateHeureDebut = null;
 
     #[ORM\Column]
@@ -39,7 +39,7 @@ class Sortie
 
     #[ORM\Column]
     #[Assert\NotBlank(message:"Veuillez indiquer la date de fin d'inscription")]
-    #[Assert\DateTime]
+    #[Assert\Type("\DateTimeImmutable")]
     private ?\DateTimeImmutable $dateLimiteInscription = null;
 
     #[ORM\Column]
@@ -118,7 +118,7 @@ class Sortie
         return $this->dateHeureDebut;
     }
 
-    public function setDateHeureDebut(\DateTimeImmutable $dateHeureDebut): static
+    public function setDateHeureDebut(?\DateTimeImmutable $dateHeureDebut): static
     {
         $this->dateHeureDebut = $dateHeureDebut;
 
@@ -142,7 +142,7 @@ class Sortie
         return $this->dateLimiteInscription;
     }
 
-    public function setDateLimiteInscription(\DateTimeImmutable $dateLimiteInscription): static
+    public function setDateLimiteInscription(?\DateTimeImmutable $dateLimiteInscription): static
     {
         $this->dateLimiteInscription = $dateLimiteInscription;
 
