@@ -12,22 +12,21 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('main_home') }}"><i class="bi bi-house-door"></i> Accueil</a>
                 </li>
+              {% if is_granted("ROLE_ADMIN") %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('villes_list') }}"><i class="bi bi-building"></i> Villes</a>
+                  <a class="nav-link" href="{{ path('villes_list') }}"><i class="bi bi-building"></i> Villes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('campus_list') }}"><i class="bi bi-geo-alt"></i> Campus</a>
+                  <a class="nav-link" href="{{ path('campus_list') }}"><i class="bi bi-geo-alt"></i> Campus</a>
                 </li>
+              {% endif %}
+
                 {% if app.user %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_profile',{pseudo: app.user.pseudo}) }}"><i class="bi bi-person"></i> Mon Profil</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_logout') }}"><i class="bi bi-box-arrow-right"></i> Se déconnecter</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_login') }}"><i class="bi bi-box-arrow-in-right"></i> Se connecter</a>
                     </li>
                 {% endif %}
             </ul>

@@ -37,6 +37,7 @@ class SecurityController extends AbstractController
     #[Route('/profile/{pseudo}', name: 'app_profile', methods: ['GET', 'POST'], requirements: ['username' => '[a-zA-Z0-9_-]+'])]
     public function profile(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): Response
     {
+        if ($this->getUser()->getPseudo() === $user->getPseudo()||$this->isGranted('ROLE_ADMIN')) {
         $userForm = $this->createForm(RegistrationFormType::class, $user);
         $userForm->handleRequest($request);
 
@@ -46,7 +47,7 @@ class SecurityController extends AbstractController
 
             if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
                 // Si le mot de passe n'est pas correct, ajouter un message d'erreur
-                $this->addFlash('error', 'Le mot de passe actuel est incorrect.');
+                $this->addFlash('danger', 'Le mot de passe actuel est incorrect.');
             } else if ($userForm->isValid()) {
                 // Le mot de passe est correct, on peut enregistrer les modifications
                 $user->setDateModified(new \DateTimeImmutable());
@@ -57,9 +58,8 @@ class SecurityController extends AbstractController
 
                 return $this->redirectToRoute('main_home'); // Redirection après succès
             } else {
-                dump($user);
                 // Si le formulaire n'est pas valide, ajoute un message d'erreur
-                $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
+                $this->addFlash('danger', 'Veuillez corriger les erreurs dans le formulaire.');
             }
         }
 
@@ -67,7 +67,13 @@ class SecurityController extends AbstractController
             'user' => $user,
             'userForm' => $userForm->createView(),
         ]);
+        }else{
+            return $this->render('security/profileUtilisateur.html.twig', [
+                'user' => $user,
+            ]);
+        }
     }
+
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
     {

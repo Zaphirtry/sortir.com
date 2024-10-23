@@ -25,7 +25,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $admin = new User();
         $admin->setPseudo('admin');
         $admin->setRoles(['ROLE_ADMIN']);
-        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'admin'));
+        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'Admin2024'));
         $admin->setPrenom('Admin');
         $admin->setNom('Istrateur');
         $admin->setTelephone(0642424242);
@@ -40,7 +40,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $user = new User();
             $user->setPseudo("user$i");
             $user->setRoles(['ROLE_USER']);
-            $user->setPassword($this->passwordHasher->hashPassword($user, 'aaaa'));
+            $user->setPassword($this->passwordHasher->hashPassword($user, 'Cours2024'));
             $user->setPrenom($faker->firstName);
             $user->setNom($faker->lastName);
             $user->setTelephone($faker->numerify('0#########'));

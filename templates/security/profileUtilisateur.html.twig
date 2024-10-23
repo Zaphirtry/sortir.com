@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1>Profile de {{ user.pseudo }}</h1>
+    <form>
+        <fieldset class="border p-4 rounded">
+            <legend class="mb-3">Informations personnelles</legend>
+
+            <div class="mb-3">
+                <label for="prenom" class="form-label">Prénom :</label>
+                <input type="text" id="prenom" class="form-control" readonly value="{{ user.prenom }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="nom" class="form-label">Nom :</label>
+                <input type="text" id="nom" class="form-control" readonly value="{{ user.nom }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="campus" class="form-label">Campus :</label>
+                <input type="text" id="campus" class="form-control" readonly value="{{ user.campus.nom }}">
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+
