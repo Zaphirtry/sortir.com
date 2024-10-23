@@ -27,12 +27,13 @@ class RegistrationFormType extends AbstractType
               'label'=>'Email'
             ])
           ->add('telephone',IntegerType::class,['label'=>'Téléphone'])
-          ->add('nom', TextType::class, [
-            'label' => 'Nom'
-          ])
           ->add('prenom', TextType::class, [
             'label' => 'Prenom'
           ])
+          ->add('nom', TextType::class, [
+            'label' => 'Nom'
+          ])
+
             ->add('plainPassword', PasswordType::class, [
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller
@@ -42,13 +43,6 @@ class RegistrationFormType extends AbstractType
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Please enter a password',
-                    ]),
-
-                    new Length([
-                        'min' => 6,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
-                        // max length allowed by Symfony for security reasons
-                        'max' => 4096,
                     ]),
                 ],
             ])
