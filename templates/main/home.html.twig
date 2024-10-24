@@ -36,11 +36,22 @@
                         </td>
                         <td><a href="{{ path('app_profile', {'pseudo': sortie.organisateur.pseudo}) }}">{{ sortie.organisateur.pseudo }}</a></td>
 
+
+{#                        Colonne Afficher#}
+
                         <td>
                             <a href="{{ path('sortie_show', {'id': sortie.id}) }}" class="btn btn-sm btn-primary">
                                 <i class="bi bi-eye"></i> Afficher
                             </a>
                             {# TODO: Ajouter les boutons d'actions : Se désister, S'inscrire, Modifier, Annuler #}
+
+                            <a class="btn btn-sm btn-primary">
+                                <i class="bi bi-eye"></i> S'inscrire
+                            </a>
+
+                            <a class="btn btn-sm btn-primary">
+                                <i class="bi bi-eye"></i> Se desister
+                            </a>
                         </td>
                     </tr>
                 {% endfor %}
