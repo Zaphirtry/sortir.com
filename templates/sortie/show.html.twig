@@ -16,30 +16,106 @@
             </div>
         </div>
         <div class="card-body">
-            {{ include('sortie/_form.html.twig', {
-                'button_label': false,
-                'disabled': true
-            }) }}
-        </div>
-        <div class="card-footer text-end">
-            {{ include('sortie/_delete_form.html.twig') }}
+            {# Informations principales de la sortie #}
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h3>Informations générales</h3>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Nom de la sortie</th>
+                                <td>{{ sortie.nom }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date et heure</th>
+                                <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date limite d'inscription</th>
+                                <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Nombre de places</th>
+                                <td>{{ sortie.participant|length }}/{{ sortie.nbInscriptionsMax }}</td>
+                            </tr>
+                            <tr>
+                                <th>Durée</th>
+                                <td>{{ sortie.duree }} minutes</td>
+                            </tr>
+                            <tr>
+                                <th>Description</th>
+                                <td>{{ sortie.infosSortie }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h3>Lieu de la sortie</h3>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <th>Ville</th>
+                                <td>{{ sortie.lieu.ville.nom }}</td>
+                            </tr>
+                            <tr>
+                                <th>Lieu</th>
+                                <td>{{ sortie.lieu.nom }}</td>
+                            </tr>
+                            <tr>
+                                <th>Rue</th>
+                                <td>{{ sortie.lieu.rue }}</td>
+                            </tr>
+                            <tr>
+                                <th>Code postal</th>
+                                <td>{{ sortie.lieu.ville.codePostal }}</td>
+                            </tr>
+                            <tr>
+                                <th>Latitude</th>
+                                <td>{{ sortie.lieu.latitude }}</td>
+                            </tr>
+                            <tr>
+                                <th>Longitude</th>
+                                <td>{{ sortie.lieu.longitude }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {# Liste des participants #}
+            <div class="mt-4">
+                <h3>Liste des participants ({{ sortie.participant|length }}/{{ sortie.nbInscriptionsMax }})</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Pseudo</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Campus</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for participant in sortie.participant %}
+                            <tr>
+                                <td>{{ participant.pseudo }}</td>
+                                <td>{{ participant.nom }}</td>
+                                <td>{{ participant.prenom }}</td>
+                                <td>{{ participant.campus.nom }}</td>
+                                <td>
+                                    <a href="{{ path('app_profile', {'pseudo': participant.pseudo}) }}" class="btn btn-sm btn-info">
+                                        <i class="bi bi-person"></i> Voir le profil
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center">Aucun participant inscrit</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script src="{{ asset('js/sortie-form.js') }}"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            FormHandler.init({
-                villeSelect: '#{{ form.ville.vars.id }}',
-                lieuSelect: '#{{ form.lieu.vars.id }}',
-                rueInput: '#lieu-rue',
-                codePostalInput: '#lieu-code-postal',
-                latitudeInput: '#lieu-latitude',
-                longitudeInput: '#lieu-longitude'
-            });
-        });
-    </script>
 {% endblock %}

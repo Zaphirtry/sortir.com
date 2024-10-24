@@ -15,4 +15,17 @@ main {
     flex: 1 0 auto;
 }
 
-/* Ajoutez ici d'autres styles personnalisés si nécessaire */
+.edit-form td, .new-ville-form td {
+        padding: 0.5rem;
+}
+
+.edit-form .form-control, .new-ville-form .form-control {
+    display: inline-block;
+    width: auto;
+}
+
+/* .table .data-row:nth-of-type(odd) {
+    background-color: rgba(0,0,0,.05);
+} */
+    
+

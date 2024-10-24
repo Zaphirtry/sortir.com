@@ -62,7 +62,7 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
                 ->setDateHeureDebut(\DateTimeImmutable::createFromMutable($dateHeureDebut))
                 ->setDateLimiteInscription(\DateTimeImmutable::createFromMutable($dateLimiteInscription))
                 ->setNbInscriptionsMax($faker->numberBetween(5, 50))
-                ->setInfosSortie($faker->paragraphs(2, true))
+                ->setInfosSortie($faker->text(100))
                 ->setDuree($faker->randomElement([60, 90, 120, 180, 240])) // Durées plus réalistes
                 ->setOrganisateur($organisateur)
                 ->setCampus($organisateur->getCampus())

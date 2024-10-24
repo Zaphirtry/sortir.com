@@ -46,6 +46,7 @@ class Ville
     public function __construct()
     {
         $this->lieus = new ArrayCollection();
+        $this->dateCreated = new \DateTimeImmutable();
         $this->dateModified = new \DateTimeImmutable();
     }
 

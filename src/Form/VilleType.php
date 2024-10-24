@@ -14,12 +14,6 @@ class VilleType extends AbstractType
         $builder
             ->add('nom')
             ->add('codePostal')
-            ->add('dateCreated', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('dateModified', null, [
-                'widget' => 'single_text',
-            ])
         ;
     }
 

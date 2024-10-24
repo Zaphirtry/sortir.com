@@ -11,19 +11,26 @@
             </a>
         </div>
         <div class="card-body">
-            {{ include('sortie/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
-        </div>
-        <div class="card-footer text-end">
-            {{ include('sortie/_delete_form.html.twig') }}
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+            {% if not form.vars.valid %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form) }}
+                </div>
+            {% endif %}
+            {{ include('sortie/_form.html.twig', {'buttons_modifier': 'Enregistrer les modifications'}) }}
+            {{ form_end(form) }}
         </div>
     </div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/sortie-form.js') }}"></script>
-    <script>
+    {{ importmap('app') }}
+    <script type="module">
+        import { FormHandler } from '/assets/javascript/sortie-form.js';
+        
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('Script chargé'); // Ajout d'un log pour debug
             FormHandler.init({
                 villeSelect: '#{{ form.ville.vars.id }}',
                 lieuSelect: '#{{ form.lieu.vars.id }}',
