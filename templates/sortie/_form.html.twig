@@ -1,4 +1,4 @@
-{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+{{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'd-flex flex-column h-100'}}) }}
 {{ form_row(form._token) }}
 
 {% if form.vars.errors|length > 0 %}
@@ -7,98 +7,120 @@
     </div>
 {% endif %}
 
-    <div class="row">
-        <div class="col-md-6">
-            {# Colonne gauche #}
-            <div class="mb-3">
-                {{ form_label(form.nom) }}
-                {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.nom) }}
-            </div>
-            <div class="mb-3">
-                {{ form_row(form.dateHeureDebut, {'attr': {'class': 'form-control'}}) }}
-            </div>
-            <div class="mb-3">
-                {{ form_row(form.dateLimiteInscription, {'attr': {'class': 'form-control'}}) }}
-            </div>
-            <div class="mb-3">
-                {{ form_row(form.nbInscriptionsMax, {'attr': {'class': 'form-control'}}) }}
-            </div>
-            <div class="mb-3">
-                {{ form_row(form.duree, {'attr': {'class': 'form-control'}}) }}
-            </div>
-            <div class="mb-3">
-                {{ form_row(form.infosSortie, {'attr': {'class': 'form-control', 'rows': 3}}) }}
-            </div>
+<div class="row flex-grow-1">
+    <div class="col-md-6 d-flex flex-column mb-3">
+        {# Colonne gauche #}
+        <div class="mb-3">
+            {{ form_label(form.nom) }}
+            {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.nom) }}
         </div>
-        
-        <div class="col-md-6">
-            {# Colonne droite #}
-            <div class="mb-3">
-                <label class="form-label">Campus</label>
-                <label>
-                    <input type="text" class="form-control" value="{{ app.user.campus.nom }}" disabled>
-                </label>
-            </div>
-            <div class="mb-3">
-                {{ form_row(form.ville, {
-                    'attr': {
-                        'class': 'form-control',
-                        'data-ville-url': path('api_ville_lieux', {'id': '__id__'}),
-                        'readonly': disabled|default(false)
-                    }
-                }) }}
-            </div>
-            <div class="mb-3">
-                {{ form_row(form.lieu, {
+        <div class="mb-3">
+            {{ form_label(form.dateHeureDebut) }}
+            {{ form_widget(form.dateHeureDebut, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.dateHeureDebut) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(form.dateLimiteInscription) }}
+            {{ form_widget(form.dateLimiteInscription, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.dateLimiteInscription) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(form.nbInscriptionsMax) }}
+            {{ form_widget(form.nbInscriptionsMax, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.nbInscriptionsMax) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(form.duree) }}
+            {{ form_widget(form.duree, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.duree) }}
+        </div>
+        <div class="flex-grow-1 d-flex flex-column">
+            {{ form_label(form.infosSortie) }}
+            {{ form_widget(form.infosSortie, {
+                'attr': {
+                    'class': 'form-control flex-grow-1',
+                    'style': 'resize: none; overflow-y: auto;'
+                }
+            }) }}
+            {{ form_errors(form.infosSortie) }}
+        </div>
+    </div>
+    
+    <div class="col-md-6 d-flex flex-column">
+        {# Colonne droite #}
+        <div class="mb-3">
+            <label class="form-label">Campus</label>
+            <input type="text" class="form-control" value="{{ app.user.campus.nom }}" disabled>
+        </div>
+        <div class="mb-3">
+            {{ form_label(form.ville) }}
+            {{ form_widget(form.ville, {
+                'attr': {
+                    'class': 'form-control',
+                    'data-ville-url': path('api_ville_lieux', {'id': '__id__'}),
+                    'readonly': disabled|default(false)
+                }
+            }) }}
+            {{ form_errors(form.ville) }}
+        </div>
+        <div class="mb-3 position-relative">
+            {{ form_label(form.lieu, null, {'label_attr': {'class': 'form-label fw-bold'}}) }}
+            <div class="input-group">
+                {{ form_widget(form.lieu, {
                     'attr': {
                         'class': 'form-control',
                         'disabled': 'disabled'
                     }
                 }) }}
+                <a href="{{ path('app_lieu_new') }}" type="button" class="btn btn-outline-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Ajouter un lieu">
+                    <i class="bi bi-plus-circle" style="font-size: 1.5rem;"></i>
+                </a>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Rue</label>
-                <label for="lieu-rue"></label><input type="text" class="form-control" id="lieu-rue" disabled>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Code postal</label>
-                <label for="lieu-code-postal"></label><input type="text" class="form-control" id="lieu-code-postal" disabled>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Latitude</label>
-                <label for="lieu-latitude"></label><input type="text" class="form-control" id="lieu-latitude" disabled>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Longitude</label>
-                <label for="lieu-longitude"></label><input type="text" class="form-control" id="lieu-longitude" disabled>
-            </div>
+            {{ form_errors(form.lieu) }}
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Rue</label>
+            <input type="text" class="form-control" id="lieu-rue" disabled>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Code postal</label>
+            <label for="lieu-code-postal"></label><input type="text" class="form-control" id="lieu-code-postal" disabled>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Latitude</label>
+            <label for="lieu-latitude"></label><input type="text" class="form-control" id="lieu-latitude" disabled>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Longitude</label>
+            <label for="lieu-longitude"></label><input type="text" class="form-control" id="lieu-longitude" disabled>
         </div>
     </div>
+</div>
 
-    <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
-        {% if buttons_créer is defined %}
-            <button type="submit" name="action" value="creer" class="btn btn-success btn-lg shadow-sm rounded-pill">
-                <i class="bi bi-check-circle-fill me-2"></i>Créer
-            </button>
-            <button type="submit" name="action" value="publier" class="btn btn-primary btn-lg shadow-sm rounded-pill">
-                <i class="bi bi-cloud-upload-fill me-2"></i>Publier la sortie
-            </button>
-            <a href="{{ path('main_home') }}" class="btn btn-outline-secondary btn-lg shadow-sm rounded-pill">
-                <i class="bi bi-arrow-left-circle me-2"></i>Retour à la liste
-            </a>
-        {% endif %}
-        {% if buttons_modifier is defined %}
-            <button type="submit" name="action" value="creer" class="btn btn-warning btn-lg shadow-sm rounded-pill">
-                <i class="bi bi-pencil-square me-2"></i>Enregistrer les modifications
-            </button>
-            <button type="submit" name="action" value="publier" class="btn btn-primary btn-lg shadow-sm rounded-pill">
-                <i class="bi bi-cloud-upload-fill me-2"></i>Publier la sortie
-            </button>
-            {{ include('sortie/_delete_form.html.twig') }}
-            <a href="{{ path('main_home') }}" class="btn btn-outline-secondary btn-lg shadow-sm rounded-pill">
-                <i class="bi bi-arrow-left-circle me-2"></i>Retour à la liste
-            </a>
-        {% endif %}
-    </div>
+<div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+    {% if buttons_créer is defined %}
+        <button type="submit" name="action" value="creer" class="btn btn-success btn-lg shadow-sm rounded-pill">
+            <i class="bi bi-check-circle-fill me-2"></i>Créer
+        </button>
+        <button type="submit" name="action" value="publier" class="btn btn-primary btn-lg shadow-sm rounded-pill">
+            <i class="bi bi-cloud-upload-fill me-2"></i>Publier la sortie
+        </button>
+        <a href="{{ path('main_home') }}" class="btn btn-outline-secondary btn-lg shadow-sm rounded-pill">
+            <i class="bi bi-arrow-left-circle me-2"></i>Retour à la liste
+        </a>
+    {% endif %}
+    {% if buttons_modifier is defined %}
+        <button type="submit" name="action" value="creer" class="btn btn-warning btn-lg shadow-sm rounded-pill">
+            <i class="bi bi-pencil-square me-2"></i>Enregistrer les modifications
+        </button>
+        <button type="submit" name="action" value="publier" class="btn btn-primary btn-lg shadow-sm rounded-pill">
+            <i class="bi bi-cloud-upload-fill me-2"></i>Publier la sortie
+        </button>
+        {{ include('sortie/_delete_form.html.twig') }}
+        <a href="{{ path('main_home') }}" class="btn btn-outline-secondary btn-lg shadow-sm rounded-pill">
+            <i class="bi bi-arrow-left-circle me-2"></i>Retour à la liste
+        </a>
+    {% endif %}
+</div>
 {{ form_end(form) }}

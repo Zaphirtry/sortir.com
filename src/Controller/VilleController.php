@@ -35,6 +35,7 @@ final class VilleController extends AbstractController
             $entityManager->persist($newVille);
             $entityManager->flush();
 
+            $this->addFlash('success', 'La ville a été créée avec succès.');
             return $this->redirectToRoute('villes_list', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -67,10 +68,16 @@ final class VilleController extends AbstractController
     public function delete(Request $request, Ville $ville, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$ville->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($ville);
-            $entityManager->flush();
+            try {
+                $entityManager->remove($ville);
+                $entityManager->flush();
+                $this->addFlash('success', 'La ville a été supprimée avec succès.');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Une erreur s\'est produite lors de la suppression de la ville.');
+            }
+        } else {
+            $this->addFlash('error', 'Token CSRF invalide.');
         }
-
         return $this->redirectToRoute('villes_list', [], Response::HTTP_SEE_OTHER);
     }
 }

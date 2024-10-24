@@ -50,6 +50,7 @@ class Lieu
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
+        $this->dateCreated = new \DateTimeImmutable();
         $this->dateModified = new \DateTimeImmutable();
     }
 

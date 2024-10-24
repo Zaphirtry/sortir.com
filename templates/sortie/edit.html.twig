@@ -11,19 +11,12 @@
             </a>
         </div>
         <div class="card-body">
-            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            {% if not form.vars.valid %}
-                <div class="alert alert-danger">
-                    {{ form_errors(form) }}
-                </div>
-            {% endif %}
             {{ include('sortie/_form.html.twig', {'buttons_modifier': 'Enregistrer les modifications'}) }}
-            {{ form_end(form) }}
         </div>
     </div>
 {% endblock %}
 
-{% block javascripts %}
+{# {% block javascripts %}
     {{ parent() }}
     {{ importmap('app') }}
     <script type="module">
@@ -41,4 +34,4 @@
             });
         });
     </script>
-{% endblock %}
+{% endblock %} #}

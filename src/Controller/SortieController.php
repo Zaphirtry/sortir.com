@@ -32,6 +32,7 @@ final class SortieController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // L'organisateur est forcément la personne connectée
             $sortie->setOrganisateur($organisateur);
+            $sortie->setNombreInscrits(0);
 
             // Le campus est forcément celui de l'organisateur
             $campus = $organisateur->getCampus();

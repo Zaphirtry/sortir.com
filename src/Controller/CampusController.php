@@ -14,39 +14,34 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/campus')]
 final class CampusController extends AbstractController
 {
-    #[Route(name: 'campus_list', methods: ['GET'])]
-    public function index(CampusRepository $campusRepository): Response
+    #[Route(name: 'campus_list', methods: ['GET', 'POST'])]
+    public function index(CampusRepository $campusRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
-        return $this->render('campus/index.html.twig', [
-            'campuses' => $campusRepository->findAll(),
-        ]);
-    }
+        $campuses = $campusRepository->findAll();
+        $newCampus = new Campus();
+        $newForm = $this->createForm(CampusType::class, $newCampus);
+        $newForm->handleRequest($request);
 
-    #[Route('/new', name: 'campus_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $campus = new Campus();
-        $form = $this->createForm(CampusType::class, $campus);
-        $form->handleRequest($request);
+        $editForms = [];
+        foreach ($campuses as $campus) {
+            $editForm = $this->createForm(CampusType::class, $campus, [
+                'action' => $this->generateUrl('campus_edit', ['id' => $campus->getId()]),
+                'method' => 'POST',
+            ]);
+            $editForms[$campus->getId()] = $editForm->createView();
+        }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($campus);
+        if ($newForm->isSubmitted() && $newForm->isValid()) {
+            $entityManager->persist($newCampus);
             $entityManager->flush();
 
             return $this->redirectToRoute('campus_list', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('campus/new.html.twig', [
-            'campus' => $campus,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'campus_show', methods: ['GET'])]
-    public function show(Campus $campus): Response
-    {
-        return $this->render('campus/show.html.twig', [
-            'campus' => $campus,
+        return $this->render('campus/campus.html.twig', [
+            'campuses' => $campuses,
+            'new_form' => $newForm->createView(),
+            'edit_forms' => $editForms,
         ]);
     }
 
@@ -57,25 +52,32 @@ final class CampusController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $campus->setDateModified(new \DateTimeImmutable());
             $entityManager->flush();
 
-            return $this->redirectToRoute('campus_list', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('campus/edit.html.twig', [
-            'campus' => $campus,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'campus_delete', methods: ['POST'])]
-    public function delete(Request $request, Campus $campus, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$campus->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($campus);
-            $entityManager->flush();
+            $this->addFlash('success', 'Le campus a été mis à jour avec succès.');
+        } else {
+            $this->addFlash('error', 'Une erreur s\'est produite lors de la mise à jour du campus.');
         }
 
         return $this->redirectToRoute('campus_list', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{id}', name: 'campus_delete', methods: ['POST'])]
+public function delete(Request $request, Campus $campus, EntityManagerInterface $entityManager): Response
+{
+    if ($this->isCsrfTokenValid('delete'.$campus->getId(), $request->request->get('_token'))) {
+        try {
+            $entityManager->remove($campus);
+            $entityManager->flush();
+            $this->addFlash('success', 'Le campus a été supprimé avec succès.');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Une erreur s\'est produite lors de la suppression du campus.');
+        }
+    } else {
+        $this->addFlash('error', 'Token CSRF invalide.');
+    }
+
+    return $this->redirectToRoute('campus_list', [], Response::HTTP_SEE_OTHER);
+}
 }
