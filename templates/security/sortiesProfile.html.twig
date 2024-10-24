@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h1 class="mb-0">Liste des sorties</h1>
+    </div>
+    <div class="card-body">
+      <table class="table table-striped table-hover">
+        <thead class="table-light">
+        <tr>
+          <th>Nom de la sortie</th>
+          <th>Date de la sortie</th>
+          <th>Date limite d'inscription</th>
+          <th>Inscrits/Places</th>
+          <th>État</th>
+          <th>Inscrit</th>
+          <th>Organisateur</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for sortie in sorties %}
+          <tr>
+            <td>{{ sortie.nom }}</td>
+            <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
+            <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
+            <td>{{ sortie.nombreInscrits }}/{{ sortie.nbInscriptionsMax }}</td>
+            <td><span class="badge bg-info">{{ sortie.etat.libelle }}</span></td>
+            <td class="text-center">
+              {% if app.user in sortie.participant %}
+                <span class="fw-bold text-success">X</span>
+              {% endif %}
+            </td>
+            <td><a href="{{ path('app_profile', {'pseudo': sortie.organisateur.pseudo}) }}">{{ sortie.organisateur.pseudo }}</a></td>
+
+            <td>
+              <a href="{{ path('sortie_show', {'id': sortie.id}) }}" class="btn btn-sm btn-primary">
+                <i class="bi bi-eye"></i> Afficher
+              </a>
+              {# TODO: Ajouter les boutons d'actions : Se désister, S'inscrire, Modifier, Annuler #}
+
+              <a class="btn btn-sm btn-primary">
+                <i class="bi bi-eye"></i> S'inscrire
+              </a>
+
+
+              <a class="btn btn-sm btn-primary">
+                <i class="bi bi-eye"></i> Se desister
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer text-end">
+      <a href="{{ path('sortie_new') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Créer une sortie
+      </a>
+    </div>
+  </div>
+{% endblock %}
+
+{% block title %}
+
+{% endblock %}
+

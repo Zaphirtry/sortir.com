@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\SortieRepository;
+use App\Repository\UserRepository;
 use Cassandra\Type\UserType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,8 +35,32 @@ class SecurityController extends AbstractController
             'error' => $error,
         ]);
     }
+  #[Route('/profile/{pseudo}', name: 'security_profile', methods: ['GET'], requirements: ['username' => '[a-zA-Z0-9_-]+'])]
+    public function affiProfile(User $user): Response{
+    if ($this->getUser()->getPseudo() === $user->getPseudo()||$this->isGranted('ROLE_ADMIN')){
+      return $this->render('security/profile.html.twig', [
+        'user' => $user,
+      ]);
+    }else {
+      return $this->redirectToRoute('main_home');
+    }
+  }
 
-    #[Route('/profile/{pseudo}', name: 'app_profile', methods: ['GET', 'POST'], requirements: ['username' => '[a-zA-Z0-9_-]+'])]
+  #[Route('/profile/sorties/{pseudo}', name: 'security_profile_sorties', methods: ['GET'], requirements: ['username' => '[a-zA-Z0-9_-]+'])]
+  public function affiSorties(User $user,UserRepository $userRepository, SortieRepository $sortieRepository): Response{
+    if ($this->getUser()->getPseudo() === $user->getPseudo()||$this->isGranted('ROLE_ADMIN')) {
+      $sorties = $sortieRepository->findByUser($user);
+      return $this->render('security/sortiesProfile.html.twig', [
+        'sorties' => $sorties,
+        'user' => $user,
+      ]);
+    }else{
+      return $this->redirectToRoute('main_home');
+    }
+  }
+
+
+    #[Route('/profile/modifier/{pseudo}', name: 'app_profile', methods: ['GET', 'POST'], requirements: ['username' => '[a-zA-Z0-9_-]+'])]
     public function profile(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): Response
     {
         if ($this->getUser()->getPseudo() === $user->getPseudo()||$this->isGranted('ROLE_ADMIN')) {
@@ -63,7 +89,7 @@ class SecurityController extends AbstractController
             }
         }
 
-        return $this->render('security/profile.html.twig', [
+        return $this->render('security/ModifProfile.html.twig', [
             'user' => $user,
             'userForm' => $userForm->createView(),
         ]);

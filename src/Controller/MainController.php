@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Etat;
 use App\Entity\Sortie;
 use App\Entity\Campus;
 use App\Form\FiltresType;
+use App\Repository\EtatRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 class MainController extends AbstractController
 {
     #[Route('/', name: 'main_home', methods: ['GET','POST'])]
-    public function home(SortieRepository $sortieRepository,Request $request, EntityManagerInterface $em): Response
+    public function home(SortieRepository $sortieRepository,EtatRepository $etatRepository,Request $request, EntityManagerInterface $em): Response
     {
       // Créer le formulaire de recherche
       $searchForm = $this->createForm(FiltresType::class);
@@ -59,14 +61,21 @@ class MainController extends AbstractController
           $queryBuilder->orWhere(':user MEMBER OF s.participant')
             ->setParameter('user', $this->getUser());
         }
-        //TODO: ne pas laisser l'id en dur
+
         if (!empty($data['sortiesPassees'])) {
-          $queryBuilder->andWhere('s.etat = :etat')
-            ->setParameter('etat', 23);
+          $etat = $etatRepository->findOneByLibelle('Passée');
+          if ($etat) {
+            $queryBuilder->andWhere('s.etat = :etat')
+              ->setParameter('etat', $etat->getId());
+          }
         }
+
         if (!empty($data['sortiesAnnulee'])) {
-          $queryBuilder->andWhere('s.etat = :etat')
-            ->setParameter('etat', 24);
+          $etat = $etatRepository->findOneByLibelle('Annulée');
+          if ($etat) {
+            $queryBuilder->andWhere('s.etat = :etat')
+              ->setParameter('etat', $etat->getId());
+          }
         }
       }
 
@@ -74,7 +83,7 @@ class MainController extends AbstractController
 
       return $this->render('main/home.html.twig', [
         'sorties' => $sorties,
-        'searchForm' => $searchForm->createView(),
+        'searchForm' => $searchForm,
       ]);
 //        return $this->render('main/home.html.twig',[
 //           'sorties' => $sortieRepository->findAll()

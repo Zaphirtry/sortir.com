@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Sortie;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,6 +17,13 @@ class SortieRepository extends ServiceEntityRepository
         parent::__construct($registry, Sortie::class);
     }
 
+  public function findByUser(User $user): array{
+    return $this->createQueryBuilder('s')
+      ->andWhere('s.organisateur = :user OR :user MEMBER OF s.participant')
+      ->setParameter('user', $user)
+      ->getQuery()
+      ->getResult();
+  }
 //    /**
 //     * @return Sortie[] Returns an array of Sortie objects
 //     */
