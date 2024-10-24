@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Villes | {{ parent() }}{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h1 class="mb-0">Liste des Villes</h1>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nom</th>
+                        <th>Code Postal</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for ville in villes %}
+                    <tr id="ville-{{ ville.id }}" class="data-row">
+                        <td>{{ ville.nom }}</td>
+                        <td>{{ ville.codePostal }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-ville" data-ville-id="{{ ville.id }}">
+                                <i class="bi bi-pencil"></i> Modifier
+                            </button>
+                            <a href="{{ path('ville_delete', {'id': ville.id}) }}" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette ville ?')">
+                                <i class="bi bi-trash"></i> Supprimer
+                            </a>
+                        </td>
+                    </tr>
+                    <tr id="edit-form-{{ ville.id }}" class="edit-form" style="display: none;">
+                        {{ include('ville/_form_ville.html.twig', {'form': edit_forms[ville.id], 'button_label': 'Mettre à jour'}) }}
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center">Aucune ville trouvée</td>
+                    </tr>
+                {% endfor %}
+                    <tr class="new-ville-form">
+                        {{ include('ville/_form_ville.html.twig', {'form': new_form, 'button_label': 'Ajouter'}) }}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editButtons = document.querySelectorAll('.edit-ville');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const villeId = this.getAttribute('data-ville-id');
+                    const villeRow = document.getElementById('ville-' + villeId);
+                    const editForm = document.getElementById('edit-form-' + villeId);
+                    villeRow.style.display = 'none';
+                    editForm.style.display = 'table-row';
+                });
+            });
+
+            const cancelButtons = document.querySelectorAll('.cancel-edit');
+            cancelButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const editForm = this.closest('tr');
+                    const villeId = editForm.id.split('-')[2];
+                    const villeRow = document.getElementById('ville-' + villeId);
+                    editForm.style.display = 'none';
+                    villeRow.style.display = 'table-row';
+                });
+            });
+        });
+    </script>
+{% endblock %}

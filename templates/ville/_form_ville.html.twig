@@ -1,0 +1,18 @@
+{{ form_start(form, {'attr': {'class': 'row g-3 align-items-center'}}) }}
+    <td>
+        {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Nom de la ville'}}) }}
+    </td>
+    <td>
+        {{ form_widget(form.codePostal, {'attr': {'class': 'form-control', 'placeholder': 'Code postal'}}) }}
+    </td>
+    <td>
+        <button type="submit" class="btn btn-sm btn-success">
+            <i class="bi bi-check-circle"></i> {{ button_label|default('Ajouter') }}
+        </button>
+        {% if button_label == 'Mettre à jour' %}
+            <button type="button" class="btn btn-sm btn-secondary cancel-edit">
+                <i class="bi bi-x-circle"></i> Annuler
+            </button>
+        {% endif %}
+    </td>
+{{ form_end(form) }}

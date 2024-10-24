@@ -14,58 +14,53 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/villes')]
 final class VilleController extends AbstractController
 {
-    #[Route(name: 'villes_list', methods: ['GET'])]
-    public function index(VilleRepository $villeRepository): Response
+    #[Route(name: 'villes_list', methods: ['GET', 'POST'])]
+    public function villes(VilleRepository $villeRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
-        return $this->render('ville/index.html.twig', [
-            'villes' => $villeRepository->findAll(),
-        ]);
-    }
+        $villes = $villeRepository->findAll();
+        $newVille = new Ville();
+        $newForm = $this->createForm(VilleType::class, $newVille);
+        $newForm->handleRequest($request);
 
-    #[Route('/new', name: 'ville_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $ville = new Ville();
-        $form = $this->createForm(VilleType::class, $ville);
-        $form->handleRequest($request);
+        $editForms = [];
+        foreach ($villes as $ville) {
+            $editForm = $this->createForm(VilleType::class, $ville, [
+                'action' => $this->generateUrl('ville_edit', ['id' => $ville->getId()]),
+                'method' => 'POST',
+            ]);
+            $editForms[$ville->getId()] = $editForm->createView();
+        }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($ville);
+        if ($newForm->isSubmitted() && $newForm->isValid()) {
+            $entityManager->persist($newVille);
             $entityManager->flush();
 
             return $this->redirectToRoute('villes_list', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('ville/new.html.twig', [
-            'ville' => $ville,
-            'form' => $form,
+        return $this->render('ville/villes.html.twig', [
+            'villes' => $villes,
+            'new_form' => $newForm->createView(),
+            'edit_forms' => $editForms,
         ]);
     }
 
-//    #[Route('/{id}', name: 'ville_show', methods: ['GET'])]
-//    public function show(Ville $ville): Response
-//    {
-//        return $this->render('ville/show.html.twig', [
-//            'ville' => $ville,
-//        ]);
-//    }
-
-    #[Route('/{id}/edit', name: 'ville_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'ville_edit', methods: ['POST'])]
     public function edit(Request $request, Ville $ville, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(VilleType::class, $ville);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $ville->setDateModified(new \DateTimeImmutable());
             $entityManager->flush();
 
-            return $this->redirectToRoute('villes_list', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'La ville a été mise à jour avec succès.');
+        } else {
+            $this->addFlash('error', 'Une erreur s\'est produite lors de la mise à jour de la ville.');
         }
 
-        return $this->render('ville/edit.html.twig', [
-            'ville' => $ville,
-            'form' => $form,
-        ]);
+        return $this->redirectToRoute('villes_list', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}', name: 'ville_delete', methods: ['POST'])]
