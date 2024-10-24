@@ -59,13 +59,14 @@ class MainController extends AbstractController
           $queryBuilder->orWhere(':user MEMBER OF s.participant')
             ->setParameter('user', $this->getUser());
         }
+        //TODO: ne pas laisser l'id en dur
         if (!empty($data['sortiesPassees'])) {
           $queryBuilder->andWhere('s.etat = :etat')
-            ->setParameter('etat', 17);
+            ->setParameter('etat', 23);
         }
         if (!empty($data['sortiesAnnulee'])) {
           $queryBuilder->andWhere('s.etat = :etat')
-            ->setParameter('etat', 18);
+            ->setParameter('etat', 24);
         }
       }
 
