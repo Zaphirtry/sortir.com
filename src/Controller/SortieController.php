@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
 use App\Entity\Sortie;
 use App\Entity\User;
 use App\Form\SortieType;
@@ -41,10 +42,21 @@ final class SortieController extends AbstractController
 
             $sortie->setCampus($campus);
 
+            // Définir l'état en fonction du bouton cliqué
+            $action = $request->request->get('action');
+            if ($action === 'publier') {
+                $etat = $entityManager->getRepository(Etat::class)->findOneBy(['libelle' => 'Ouverte']);
+            } else {
+                $etat = $entityManager->getRepository(Etat::class)->findOneBy(['libelle' => 'Créée']);
+            }
+            
+            $sortie->setEtat($etat);
+
             $entityManager->persist($sortie);
             $entityManager->flush();
 
-            return $this->redirectToRoute('main_home', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', "La sortie a été " . ($action === 'publier' ? 'publiée' : 'créée') . " avec succès.");
+            return $this->redirectToRoute('main_home');
         }
 
         return $this->render('sortie/new.html.twig', [
@@ -70,13 +82,19 @@ final class SortieController extends AbstractController
     public function edit(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(SortieType::class, $sortie);
+
+        // Pré-remplir le champ ville avec la ville du lieu actuel
+        if ($sortie->getLieu()) {
+            $form->get('ville')->setData($sortie->getLieu()->getVille());
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $sortie->setDateModified(new \DateTimeImmutable());
             $entityManager->flush();
-
-            return $this->redirectToRoute('main_home', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'La sortie a été modifiée avec succès.');
+            return $this->redirectToRoute('sortie_show', ['id' => $sortie->getId()]);
         }
 
         return $this->render('sortie/edit.html.twig', [

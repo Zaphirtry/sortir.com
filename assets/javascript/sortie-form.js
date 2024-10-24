@@ -1,4 +1,4 @@
-const FormHandler = {
+export const FormHandler = {
     init(selectors) {
         console.log('Initialisation avec les sélecteurs:', selectors);
         this.villeSelect = document.querySelector(selectors.villeSelect);
@@ -17,7 +17,13 @@ const FormHandler = {
         if (!this.longitudeInput) console.error('longitudeInput non trouvé');
 
         this.setupEventListeners();
-        this.disableLieuSelect();
+        
+        // Si une ville est déjà sélectionnée (cas de l'édition)
+        if (this.villeSelect.value) {
+            this.initializeExistingData();
+        } else {
+            this.disableLieuSelect();
+        }
     },
 
     disableLieuSelect() {
@@ -58,12 +64,6 @@ const FormHandler = {
             const response = await fetch(url);
             console.log('Statut de la réponse:', response.status);
             
-            if (!response.ok) {
-                const text = await response.text();
-                console.error('Contenu de la réponse en erreur:', text);
-                throw new Error(`Erreur réseau: ${response.status}`);
-            }
-            
             const lieux = await response.json();
             console.log('Lieux reçus:', lieux);
             
@@ -97,12 +97,6 @@ const FormHandler = {
             const response = await fetch(url);
             console.log('Statut de la réponse détails:', response.status);
             
-            if (!response.ok) {
-                const text = await response.text();
-                console.error('Contenu de la réponse en erreur:', text);
-                throw new Error(`Erreur réseau: ${response.status}`);
-            }
-            
             const lieu = await response.json();
             console.log('Détails du lieu reçus:', lieu);
             
@@ -113,6 +107,19 @@ const FormHandler = {
         } catch (error) {
             console.error('Erreur:', error);
             this.clearLieuDetails();
+        }
+    },
+
+    async initializeExistingData() {
+        const villeId = this.villeSelect.value;
+        const lieuId = this.lieuSelect.value;
+        
+        if (villeId) {
+            await this.fetchAndPopulateLieux(villeId);
+            if (lieuId) {
+                this.lieuSelect.value = lieuId;
+                await this.fetchLieuDetails(lieuId);
+            }
         }
     }
 };

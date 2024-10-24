@@ -11,17 +11,18 @@
             </a>
         </div>
         <div class="card-body">
-            {{ include('sortie/_form.html.twig', {'button_label': 'Enregistrer'}) }}
+            {{ include('sortie/_form.html.twig', {'buttons_créer': 'Créer'}) }}
         </div>
     </div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="{{ asset('js/sortie-form.js') }}"></script>
-    <script>
+    {{ importmap('app') }}
+    <script type="module">
+        import { FormHandler } from '/assets/javascript/sortie-form.js';
+        
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM chargé, initialisation du formulaire');
             FormHandler.init({
                 villeSelect: '#{{ form.ville.vars.id }}',
                 lieuSelect: '#{{ form.lieu.vars.id }}',

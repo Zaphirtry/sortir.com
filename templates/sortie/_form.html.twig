@@ -1,24 +1,34 @@
-{{ form_start(form, {'attr': {'class': disabled|default(false) ? '' : 'needs-validation', 'novalidate': disabled|default(false) ? false : 'novalidate'}}) }}
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+{{ form_row(form._token) }}
+
+{% if form.vars.errors|length > 0 %}
+    <div class="alert alert-danger">
+        {{ form_errors(form) }}
+    </div>
+{% endif %}
+
     <div class="row">
         <div class="col-md-6">
             {# Colonne gauche #}
             <div class="mb-3">
-                {{ form_row(form.nom, {'attr': {'class': 'form-control', 'readonly': disabled|default(false)}}) }}
+                {{ form_label(form.nom) }}
+                {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.nom) }}
             </div>
             <div class="mb-3">
-                {{ form_row(form.dateHeureDebut, {'attr': {'class': 'form-control', 'readonly': disabled|default(false)}}) }}
+                {{ form_row(form.dateHeureDebut, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div class="mb-3">
-                {{ form_row(form.dateLimiteInscription, {'attr': {'class': 'form-control', 'readonly': disabled|default(false)}}) }}
+                {{ form_row(form.dateLimiteInscription, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div class="mb-3">
-                {{ form_row(form.nbInscriptionsMax, {'attr': {'class': 'form-control', 'readonly': disabled|default(false)}}) }}
+                {{ form_row(form.nbInscriptionsMax, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div class="mb-3">
-                {{ form_row(form.duree, {'attr': {'class': 'form-control', 'readonly': disabled|default(false)}}) }}
+                {{ form_row(form.duree, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div class="mb-3">
-                {{ form_row(form.infosSortie, {'attr': {'class': 'form-control', 'rows': 3, 'readonly': disabled|default(false)}}) }}
+                {{ form_row(form.infosSortie, {'attr': {'class': 'form-control', 'rows': 3}}) }}
             </div>
         </div>
         
@@ -66,11 +76,29 @@
         </div>
     </div>
 
-    {% if button_label is not same as(false) %}
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-check-circle"></i> {{ button_label|default('Enregistrer') }}
+    <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+        {% if buttons_créer is defined %}
+            <button type="submit" name="action" value="creer" class="btn btn-success btn-lg shadow-sm rounded-pill">
+                <i class="bi bi-check-circle-fill me-2"></i>Créer
             </button>
-        </div>
-    {% endif %}
+            <button type="submit" name="action" value="publier" class="btn btn-primary btn-lg shadow-sm rounded-pill">
+                <i class="bi bi-cloud-upload-fill me-2"></i>Publier la sortie
+            </button>
+            <a href="{{ path('main_home') }}" class="btn btn-outline-secondary btn-lg shadow-sm rounded-pill">
+                <i class="bi bi-arrow-left-circle me-2"></i>Retour à la liste
+            </a>
+        {% endif %}
+        {% if buttons_modifier is defined %}
+            <button type="submit" name="action" value="creer" class="btn btn-warning btn-lg shadow-sm rounded-pill">
+                <i class="bi bi-pencil-square me-2"></i>Enregistrer les modifications
+            </button>
+            <button type="submit" name="action" value="publier" class="btn btn-primary btn-lg shadow-sm rounded-pill">
+                <i class="bi bi-cloud-upload-fill me-2"></i>Publier la sortie
+            </button>
+            {{ include('sortie/_delete_form.html.twig') }}
+            <a href="{{ path('main_home') }}" class="btn btn-outline-secondary btn-lg shadow-sm rounded-pill">
+                <i class="bi bi-arrow-left-circle me-2"></i>Retour à la liste
+            </a>
+        {% endif %}
+    </div>
 {{ form_end(form) }}

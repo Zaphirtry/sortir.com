@@ -22,9 +22,10 @@ class SortieType extends AbstractType
         $builder
             ->add('nom', TextType::class, [
                 'label' => 'Nom de la sortie',
+                'required' => true,
                 'attr' => [
                     'placeholder' => 'ex : Cinéma',
-                ]
+                ],
             ])
             ->add('dateHeureDebut', DateTimeType::class, [
                 'label' => 'Date et heure de début',
@@ -62,11 +63,6 @@ class SortieType extends AbstractType
                 'choice_label' => 'nom',
                 'placeholder' => 'Sélectionnez d\'abord une ville',
                 'required' => true,
-            ])
-            ->add('etat', EntityType::class, [
-                'label' => 'État',
-                'class' => Etat::class,
-                'choice_label' => 'libelle',
             ])
         ;
     }

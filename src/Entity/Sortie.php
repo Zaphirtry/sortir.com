@@ -78,7 +78,8 @@ class Sortie
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotBlank(message:"Veuillez indiquer le campus")]
+    // Le campus est forcément renseigné dans le controller. Si la ligne est rajoutée, le formulaire ne passe plus
+    // #[Assert\NotBlank(message:"Veuillez indiquer le campus")]
     private ?Campus $campus = null;
 
     #[ORM\ManyToOne(inversedBy: 'sorties')]
