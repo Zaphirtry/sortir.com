@@ -25,36 +25,37 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
         }
     }
 
+    private function distribuerEtats(ObjectManager $manager): array
+    {
+        $etats = $manager->getRepository(Etat::class)->findAll();
+        $distribution = [];
+        foreach ($etats as $etat) {
+            $distribution[$etat->getId()] = 3; // Au moins 3 sorties par état
+        }
+        return $distribution;
+    }
+
     public function load(ObjectManager $manager): void
     {
         $faker = \Faker\Factory::create('fr_FR');
         
-        // Liste des types d'activités pour générer des noms plus réalistes
         $typesActivites = [
-            'Soirée',
-            'Concert',
-            'Spectacle',
-            'After-work',
-            'Exposition',
-            'Visite guidée',
-            'Cinéma',
-            'Théâtre',
-            'Festival'
+            'Soirée', 'Concert', 'Spectacle', 'After-work', 'Exposition',
+            'Visite guidée', 'Cinéma', 'Théâtre', 'Festival'
         ];
 
-        // Création de 30 sorties
-        for ($i = 0; $i < 30; $i++) {
+        $distribution = $this->distribuerEtats($manager);
+        $totalSorties = max(array_sum($distribution), 30); // Au moins 30 sorties
+
+        for ($i = 0; $i < $totalSorties; $i++) {
             $sortie = new Sortie();
             
-            // Génération de dates cohérentes
             $dateHeureDebut = $faker->dateTimeBetween('-1 month', '+3 months');
             $dateLimiteInscription = clone $dateHeureDebut;
             $dateLimiteInscription->modify('-2 days');
 
-            // Sélection de l'organisateur
             $organisateur = $this->getReference('user_' . $faker->numberBetween(0, 9));
             
-            // Génération d'un nom plus réaliste
             $typeActivite = $faker->randomElement($typesActivites);
             $nom = $typeActivite . ' : ' . $faker->words(3, true);
 
@@ -63,12 +64,16 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
                 ->setDateLimiteInscription(\DateTimeImmutable::createFromMutable($dateLimiteInscription))
                 ->setNbInscriptionsMax($faker->numberBetween(5, 50))
                 ->setInfosSortie($faker->text(100))
-                ->setDuree($faker->randomElement([60, 90, 120, 180, 240])) // Durées plus réalistes
+                ->setDuree($faker->randomElement([60, 90, 120, 180, 240]))
                 ->setOrganisateur($organisateur)
                 ->setCampus($organisateur->getCampus())
                 ->setLieu($this->getReference('lieu_' . $faker->numberBetween(1, 25)))
-                ->setDateCreated(new \DateTimeImmutable())
-                ->setEtat($this->determinerEtat($dateHeureDebut, $dateLimiteInscription));
+                ->setDateCreated(new \DateTimeImmutable());
+
+            // Attribution d'un état en respectant la distribution
+            $etatId = $this->attribuerEtat($distribution);
+            $etat = $manager->getRepository(Etat::class)->find($etatId);
+            $sortie->setEtat($etat);
 
             // Ajout aléatoire de participants
             $nbParticipants = $faker->numberBetween(0, min(10, $sortie->getNbInscriptionsMax()));
@@ -85,6 +90,17 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
         }
 
         $manager->flush();
+    }
+
+    private function attribuerEtat(array &$distribution): int
+    {
+        $etatsDisponibles = array_filter($distribution, fn($count) => $count > 0);
+        if (empty($etatsDisponibles)) {
+            return array_rand($distribution); // Si tous les états ont été utilisés, on choisit aléatoirement
+        }
+        $etatId = array_rand($etatsDisponibles);
+        $distribution[$etatId]--;
+        return $etatId;
     }
 
     public function getDependencies(): array
