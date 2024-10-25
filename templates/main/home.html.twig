@@ -43,7 +43,7 @@
                         <td>{{ sortie.nom }}</td>
                         <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
                         <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
-                        <td>{{ sortie.nombreInscrits }}/{{ sortie.nbInscriptionsMax }}</td>
+                        <td>{{ sortie.participant|length }}/{{ sortie.nbInscriptionsMax }}</td>
                         <td><span class="badge bg-info">{{ sortie.etat.libelle }}</span></td>
                         <td class="text-center">
                             {% if app.user in sortie.participant %}
@@ -54,21 +54,30 @@
 
 
 {#                        Colonne Afficher#}
-
                         <td>
                             <a href="{{ path('sortie_show', {'id': sortie.id}) }}" class="btn btn-sm btn-primary">
                                 <i class="bi bi-eye"></i> Afficher
                             </a>
                             {# TODO: Ajouter les boutons d'actions : Se désister, S'inscrire, Modifier, Annuler #}
 
-                            <a class="btn btn-sm btn-primary">
-                                <i class="bi bi-eye"></i> S'inscrire
-                            </a>
+
+                                {% if app.user and app.user not in sortie.participant and (sortie.etat.libelle == 'Ouverte') %}
+                                    <form action="{{ path('sortie_inscrire', {'id': sortie.id}) }}" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="bi bi-person-plus"></i> S'inscrire
+                                        </button>
+                                    </form>
+                                {% endif %}
 
 
-                            <a class="btn btn-sm btn-primary">
-                                <i class="bi bi-eye"></i> Se desister
-                            </a>
+                                {% if app.user and app.user in sortie.participant and (sortie.etat.libelle == 'Ouverte' or sortie.etat.libelle == 'Clôturée') %}
+                                    {# Ajoutez ici le bouton "Se désister" si nécessaire #}
+                                    <form action="{{ path('sortie_desister', {'id': sortie.id}) }}" method="POST" style="display: inline;">
+                                    <button type="submit " class="btn btn-sm btn-warning">
+                                        <i class="bi bi-person-dash"></i> Se désister
+                                    </button>
+                                    </form>
+                                {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
