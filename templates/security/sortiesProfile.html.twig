@@ -25,7 +25,7 @@
             <td>{{ sortie.nom }}</td>
             <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
             <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
-            <td>{{ sortie.nombreInscrits }}/{{ sortie.nbInscriptionsMax }}</td>
+            <td>{{ sortie.participant|length }}/{{ sortie.nbInscriptionsMax }}</td>
             <td><span class="badge bg-info">{{ sortie.etat.libelle }}</span></td>
             <td class="text-center">
               {% if app.user in sortie.participant %}

@@ -83,8 +83,7 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
                     $sortie->addParticipant($participant);
                 }
             }
-            
-            $sortie->setNombreInscrits($sortie->getParticipant()->count());
+
 
             $manager->persist($sortie);
         }
