@@ -1,11 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Lieu{% endblock %}
+{% block title %}Ajouter lieu | {{ parent() }}{% endblock %}
 
 {% block body %}
-    <h1>Create new Lieu</h1>
-
-    {{ include('lieu/_form.html.twig') }}
-
-    <a href="{{ path('app_lieu_index') }}">back to list</a>
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h1 class="mb-0">Ajouter un lieu de sortie</h1>
+            <a href="javascript:history.back()" class="btn btn-light btn-sm me-2">
+                <i class="bi bi-arrow-left"></i> Retour à la création
+            </a>
+        </div>
+        <div class="card-body">
+            {{ include('lieu/_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}
