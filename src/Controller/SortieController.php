@@ -7,10 +7,13 @@ use App\Entity\Sortie;
 use App\Entity\User;
 use App\Form\SortieType;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpParser\Node\Stmt\Else_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints\Length;
 
 #[Route('/sortie')]
 final class SortieController extends AbstractController
@@ -20,7 +23,7 @@ final class SortieController extends AbstractController
     {
         /** @var User $organisateur */
         $organisateur = $this->getUser();
-        
+
         if (!$organisateur) {
             throw $this->createAccessDeniedException('Vous devez être connecté pour créer une sortie.');
         }
@@ -36,7 +39,7 @@ final class SortieController extends AbstractController
 
             // Le campus est forcément celui de l'organisateur
             $campus = $organisateur->getCampus();
-            
+
             if (!$campus) {
                 throw $this->createNotFoundException('Le campus de l\'organisateur est introuvable.');
             }
@@ -50,7 +53,7 @@ final class SortieController extends AbstractController
             } else {
                 $etat = $entityManager->getRepository(Etat::class)->findOneBy(['libelle' => 'Créée']);
             }
-            
+
             $sortie->setEtat($etat);
 
             $entityManager->persist($sortie);
@@ -107,11 +110,62 @@ final class SortieController extends AbstractController
     #[Route('/{id}', name: 'sortie_delete', methods: ['POST'])]
     public function delete(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$sortie->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $sortie->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($sortie);
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('main_home', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{id}/inscrire', name: 'sortie_inscrire', methods: ['POST'])]
+    public function inscrire(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
+    {
+        if ($sortie->getEtat()->getLibelle() === 'Ouverte') {
+            /** @var User $user */
+            $user = $this->getUser();
+            if (!$user) {
+                throw $this->createAccessDeniedException('Vous devez être connecté pour vous inscrire à une sortie.');
+            }
+
+            $sortie->addParticipant($user);
+            if ($sortie->getParticipant()->count() === $sortie->getNbInscriptionsMax()) {
+                $etat = $entityManager->getRepository(Etat::class)->findOneBy(['libelle' => 'Clôturée']);
+                $sortie->setEtat($etat);
+            }
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Vous êtes inscrit à la sortie.');
+        } else {
+            $this->addFlash('danger', 'Vous ne pouvez pas vous inscrire.');
+        }
+        return $this->redirectToRoute('main_home');
+    }
+
+    #[Route("/{id}/desister", name: 'sortie_desister')]
+    public function desister(Sortie $sortie, EntityManagerInterface $entityManager): Response
+    {
+        if ($sortie->getEtat()->getLibelle() === 'Ouverte' or $sortie->getEtat()->getLibelle() === 'Clôturée') {
+            /** @var User $user */
+            $user = $this->getUser();
+            if (!$user) {
+                throw $this->createAccessDeniedException('Vous devez être connecté pour vous desister à une sortie.');
+            }
+
+            $sortie->removeParticipant($user);
+            if ($sortie->getParticipant()->count() !== $sortie->getNbInscriptionsMax()) {
+                $etat = $entityManager->getRepository(Etat::class)->findOneBy(['libelle' => 'Ouverte']);
+                $sortie->setEtat($etat);
+            }
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Vous vous etes desiste de la sortie.');
+        } else {
+            $this->addFlash('danger', 'Vous ne pouvez pas vous desister.');
+
+
+        }
+        return $this->redirectToRoute('main_home');
+    }
 }
+

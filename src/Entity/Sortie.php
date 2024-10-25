@@ -47,10 +47,6 @@ class Sortie
     #[Assert\Positive]
     private ?int $nbInscriptionsMax = null;
 
-    #[ORM\Column(nullable: true)]
-    #[Assert\GreaterThanOrEqual(0)]
-    private ?int $nombreInscrits = null;
-
     #[ORM\Column(type: Types::TEXT, nullable:true)]
     #[Assert\Length(
         min: 3,
@@ -162,18 +158,6 @@ class Sortie
     public function setNbInscriptionsMax(int $nbInscriptionsMax): static
     {
         $this->nbInscriptionsMax = $nbInscriptionsMax;
-
-        return $this;
-    }
-
-    public function getNombreInscrits(): ?int
-    {
-        return $this->nombreInscrits;
-    }
-
-    public function setNombreInscrits(?int $nombreInscrits): static
-    {
-        $this->nombreInscrits = $nombreInscrits;
 
         return $this;
     }
