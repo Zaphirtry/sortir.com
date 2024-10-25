@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Campus index{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h1 class="mb-0">Liste des Campuses</h1>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nom</th>
+                        <th>actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for campus in campuses %}
+                    <tr id="campus-{{ campus.id }}" class="data-row">
+                        <td>{{ campus.nom }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-campus" data-campus-id="{{ campus.id }}">
+                                <i class="bi bi-pencil"></i> Modifier
+                            </button>
+                            {{ include('campus/_delete_form_campus.html.twig') }}
+                        </td>
+                    </tr>
+                    <tr id="edit-form-{{ campus.id }}" class="edit-form" style="display: none;">
+                        {{ include('campus/_form_campus.html.twig', {'form': edit_forms[campus.id], 'button_label': 'Mettre à jour'}) }}
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="2">Aucun campus trouvé</td>
+                    </tr>
+                {% endfor %}
+                    <tr class="new-campus-form">
+                        {{ include('campus/_form_campus.html.twig', {'form': new_form, 'button_label': 'Ajouter'}) }}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editButtons = document.querySelectorAll('.edit-campus');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const campusId = this.getAttribute('data-campus-id');
+                    const campusRow = document.getElementById('campus-' + campusId);
+                    const editForm = document.getElementById('edit-form-' + campusId);
+                    campusRow.style.display = 'none';
+                    editForm.style.display = 'table-row';
+                });
+            });
+
+            const cancelButtons = document.querySelectorAll('.cancel-edit');
+            cancelButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const editForm = this.closest('tr');
+                    const campusId = editForm.id.split('-')[2];
+                    const campusRow = document.getElementById('campus-' + campusId);
+                    editForm.style.display = 'none';
+                    campusRow.style.display = 'table-row';
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -48,7 +48,7 @@ class Sortie
     private ?int $nbInscriptionsMax = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\Positive]
+    #[Assert\GreaterThanOrEqual(0)]
     private ?int $nombreInscrits = null;
 
     #[ORM\Column(type: Types::TEXT, nullable:true)]

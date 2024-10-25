@@ -24,8 +24,8 @@ main {
     width: auto;
 }
 
-/* .table .data-row:nth-of-type(odd) {
-    background-color: rgba(0,0,0,.05);
-} */
+.form-label {
+    min-height: 24px; /* Ajustez cette valeur selon vos besoins */
+}
     
 

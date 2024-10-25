@@ -20,15 +20,21 @@
                     {% for message in messages %}
                         <div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
                             {{ message }}
+                            <script>
+                                console.log('Message flash :', {{ message|json_encode|raw }});
+                            </script>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}
                 {% endfor %}
+                {# <script>
+                    console.log('Messages flash :', {{ app.flashes|json_encode|raw }});
+                </script> #}
                 {% block body %}{% endblock %}
             </div>
         </main>
         <footer class="footer mt-auto py-3 bg-light">
-            <div class="container text-center text-muted">
+            <div class="container text-center text-muted ">
                 &copy; {{ 'now'|date('Y') }} Sortir.com - Tous droits réservés
             </div>
         </footer>
