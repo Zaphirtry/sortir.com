@@ -32,6 +32,7 @@ class RegistrationController extends AbstractController
 
             $date = new \DateTimeImmutable('now');
             $user->setDateCreated($date);
+            $user->setIsActive(true);
 
             //ajoute l'image si elle est présente
             $uploadedImage = $form->get('file')->getData();

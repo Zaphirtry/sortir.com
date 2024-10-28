@@ -1,14 +1,14 @@
 <?php
 
-namespace App\GestionEtatSortie;
+namespace App\Service;
 
-use App\Entity\Sortie;
 use App\Entity\Etat;
-use App\Repository\SortieRepository;
+use App\Entity\Sortie;
 use App\Repository\EtatRepository;
+use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-class CheckerEtatSortie
+class CheckerEtatSortieService
 {
     public function __construct(
         private readonly SortieRepository $sortieRepository,
@@ -42,8 +42,11 @@ class CheckerEtatSortie
         $dateHeureDebut = $sortie->getDateHeureDebut();
         $dateLimiteInscription = $sortie->getDateLimiteInscription();
         $dateFin = (clone $dateHeureDebut)->modify('+' . $sortie->getDuree() . ' minutes');
+        $dateArchivage = (clone $dateFin)->modify('+ 1 month');
 
-        if ($dateFin < $now) {
+        if ($now > $dateArchivage) {
+            return $this->etatRepository->findOneBy(['libelle' => Etat::ARCHIVEE]);
+        } elseif ($dateFin < $now) {
             return $this->etatRepository->findOneBy(['libelle' => Etat::PASSEE]);
         } elseif ($dateHeureDebut <= $now && $now < $dateFin) {
             return $this->etatRepository->findOneBy(['libelle' => Etat::ACTIVITE_EN_COURS]);

@@ -18,6 +18,7 @@ class Etat
     public const ACTIVITE_EN_COURS = 'Activité en cours';
     public const PASSEE = 'Passée';
     public const ANNULEE = 'Annulée';
+    public const ARCHIVEE = 'Archivée';
 
     public static function getEtats(): array
     {
@@ -28,6 +29,7 @@ class Etat
             self::ACTIVITE_EN_COURS,
             self::PASSEE,
             self::ANNULEE,
+            self::ARCHIVEE,
         ];
     }
 
