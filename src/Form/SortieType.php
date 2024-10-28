@@ -16,6 +16,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Entity\Etat;
 use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class SortieType extends AbstractType
 {
@@ -65,10 +67,8 @@ class SortieType extends AbstractType
                 'choice_label' => 'nom',
                 'placeholder' => 'Sélectionnez d\'abord une ville',
                 'required' => true,
-            ])
-        ;
-    }
-
+            ]);
+}
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
