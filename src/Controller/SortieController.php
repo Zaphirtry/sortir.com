@@ -6,22 +6,18 @@ use App\Entity\Etat;
 use App\Entity\Sortie;
 use App\Entity\User;
 use App\Form\SortieType;
+use App\Service\CheckerEtatSortieService;
 use Doctrine\ORM\EntityManagerInterface;
-use PhpParser\Node\Stmt\Else_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\Validator\Constraints\Length;
-use App\GestionEtatSortie\CheckerEtatSortie;
-use App\Repository\SortieRepository;
 
 #[Route('/sortie')]
 final class SortieController extends AbstractController
 {
-    public function __construct(private readonly CheckerEtatSortie $checkerEtatSortie)
+    public function __construct(private readonly CheckerEtatSortieService $checkerEtatSortie)
     {
     }
 

@@ -24,7 +24,7 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    App\GestionEtatSortie\CheckerEtatSortie:
+    App\Service\CheckerEtatSortieService:
         arguments:
             $sortieRepository: '@App\Repository\SortieRepository'
             $etatRepository: '@App\Repository\EtatRepository'

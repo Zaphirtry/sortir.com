@@ -26,6 +26,7 @@ security:
             logout:
                 path: app_logout
                 target: main_home
+            user_checker: App\Security\UserChecker
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -40,8 +41,8 @@ security:
         - { path: ^/reset-password, roles: PUBLIC_ACCESS}
         - { path: ^/register, roles: ROLE_ADMIN }
         - { path: ^/campus, roles: ROLE_ADMIN }
+        - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/, roles: ROLE_USER }
-
 
     role_hierarchy:
         ROLE_ADMIN: ROLE_USER

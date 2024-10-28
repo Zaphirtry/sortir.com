@@ -79,6 +79,7 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
     {
         $maintenant = new \DateTimeImmutable();
         $periodes = [
+            'passe lointain' => [$maintenant->modify('-1 year'), $maintenant->modify('-1 month')],
             'passé' => [$maintenant->modify('-1 month'), $maintenant],
             'futur proche' => [$maintenant, $maintenant->modify('+1 month')],
             'futur lointain' => [$maintenant->modify('+1 month'), $maintenant->modify('+3 months')],

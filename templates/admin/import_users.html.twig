@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Import Utilisateurs{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h1>Import d'utilisateurs via CSV</h1>
+        </div>
+        <div class="card-body">
+            {{ form_start(form) }}
+                <div class="mb-3">
+                    {{ form_row(form.csvFile, {
+                        'label': 'Fichier CSV',
+                        'attr': {'class': 'form-control'}
+                    }) }}
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-upload"></i> Importer
+                </button>
+            {{ form_end(form) }}
+            
+            <div class="mt-4">
+                <h3>Format du fichier CSV attendu :</h3>
+                <p>Le fichier doit contenir les colonnes suivantes :</p>
+                <code>pseudo,email,prenom,nom,telephone,campus</code>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

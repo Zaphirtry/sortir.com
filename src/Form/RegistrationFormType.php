@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\IsTrue;
@@ -23,6 +25,20 @@ class RegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
+            $user = $event->getData();
+            $userForm = $event->getForm();
+
+            if ($user && $user->getFilename()) {
+                $userForm->add('deleteCheckBox', CheckboxType::class, [
+                    'mapped' => false,
+                    'required' => false,
+                    'label' => 'Cocher pour supprimer l\'image',
+                ]);
+            }
+
+        });
+
         $builder
             ->add('pseudo',TextType::class,[
               'label' => 'Pseudo',
@@ -61,7 +77,7 @@ class RegistrationFormType extends AbstractType
                 'label' => 'Your image',
                 'mapped' => false,
                 'required' => false,
-                'constraints' => [ // Corriger 'comstraints' en 'constraints'
+                'constraints' => [
                     new Image([
                         'maxSize' => '3000k',
                         'mimeTypes' => [

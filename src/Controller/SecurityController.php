@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class SecurityController extends AbstractController
 {
@@ -62,7 +63,7 @@ class SecurityController extends AbstractController
 
 
     #[Route('/profile/modifier/{pseudo}', name: 'app_profile', methods: ['GET', 'POST'], requirements: ['username' => '[a-zA-Z0-9_-]+'])]
-    public function profile(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): Response
+    public function profile(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher, SluggerInterface $slugger): Response
     {
         if ($this->getUser()->getPseudo() === $user->getPseudo()||$this->isGranted('ROLE_ADMIN')) {
         $userForm = $this->createForm(RegistrationFormType::class, $user);
@@ -76,6 +77,29 @@ class SecurityController extends AbstractController
                 // Si le mot de passe n'est pas correct, ajouter un message d'erreur
                 $this->addFlash('danger', 'Le mot de passe actuel est incorrect.');
             } else if ($userForm->isValid()) {
+
+                //Si la checkbox est cochée, supprime l'image
+                if ($userForm->has('deleteCheckBox')) {
+                    unlink($this->getParameter('uploads_images_directory') . '/' . $user->getFilename());
+                    $user->setFilename(null);
+                }
+
+                //ajoute l'image si elle est présente
+                $uploadedImage = $userForm->get('file')->getData();
+                if ($uploadedImage) {
+                    $originalImageName = pathinfo($uploadedImage->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $uploadedImage->guessExtension();
+                    $safeImageName = $slugger->slug($originalImageName);
+                    $newImageName = $safeImageName . '-' . uniqid() . '.' . $uploadedImage->guessExtension();
+
+                    try {
+                        $uploadedImage->move($this->getParameter('uploads_images_directory'), $newImageName);
+                        $user->setFilename($newImageName);
+                    } catch (\Exception $e) {
+                        // Ajoutez un message flash d'erreur
+                        $this->addFlash('error', "Une erreur s'est produite lors du téléchargement de l'image. Veuillez réessayer.");
+                    }
+                }
+
                 // Le mot de passe est correct, on peut enregistrer les modifications
                 $user->setDateModified(new \DateTimeImmutable());
                 $em->persist($user);

@@ -84,6 +84,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(inversedBy: 'users')]
     private ?Campus $campus = null;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isActive = true;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
@@ -317,6 +320,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->campus = $campus;
 
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
         return $this;
     }
 }
