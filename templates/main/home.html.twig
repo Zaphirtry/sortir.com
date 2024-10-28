@@ -96,6 +96,28 @@
                     </tbody>
                 </table>
             </div>
+                                {% if sortie.organisateur == app.user %}
+                                    <a href="{{ path('sortie_edit', {'id': sortie.id}) }}" class="btn btn-warning btn-sm shadow-sm">
+                                        <i class="bi bi-pencil-square me-2"></i>Modifier
+                                    </a>
+                                {% endif %}
+
+                            {% if sortie.organisateur == app.user and (sortie.etat.libelle == 'Ouverte' or sortie.etat.libelle == 'Clôturée')%}
+                             <a href="{{ path('sortie_cancel', {'id': sortie.id}) }}" class="btn btn-sm btn-warning">
+                                <i class="bi bi-calendar2-x"></i> Annuler
+                            </a>
+                            {% endif %}
+
+                            {% if is_granted('ROLE_ADMIN') and (sortie.etat.libelle == 'Ouverte' or sortie.etat.libelle == 'Clôturée') %}
+                                <a href="{{ path('sortie_cancel', {'id': sortie.id}) }}" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-calendar2-x"></i> Annuler
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
         <div class="card-footer text-end">
             <a href="{{ path('sortie_new') }}" class="btn btn-primary">

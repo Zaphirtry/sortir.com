@@ -117,10 +117,15 @@
         <button type="submit" name="action" value="publier" class="btn btn-primary btn-lg shadow-sm rounded-pill">
             <i class="bi bi-cloud-upload-fill me-2"></i>Publier la sortie
         </button>
+        <button type="submit" name="action" value="modifier" class="btn btn-danger btn-lg shadow-sm rounded-pill">
+        <i class="bi bi-calendar2-x"></i> Annuler
+    </button>
         {{ include('sortie/_delete_form.html.twig') }}
         <a href="{{ path('main_home') }}" class="btn btn-outline-secondary btn-lg shadow-sm rounded-pill">
             <i class="bi bi-arrow-left-circle me-2"></i>Retour à la liste
         </a>
+
+
     {% endif %}
 </div>
 {{ form_end(form) }}

@@ -5,14 +5,19 @@ namespace App\Controller;
 use App\Entity\Etat;
 use App\Entity\Sortie;
 use App\Entity\User;
+use App\Form\AnnulationType;
 use App\Form\SortieType;
 use App\Service\CheckerEtatSortieService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Constraints\Length;
+use App\GestionEtatSortie\CheckerEtatSortie;
+use App\Repository\SortieRepository;
 
 #[Route('/sortie')]
 final class SortieController extends AbstractController
@@ -186,4 +191,36 @@ final class SortieController extends AbstractController
         }
         return $this->redirectToRoute('main_home');
     }
+
+    #[Route('/{id}/annuler', name: 'sortie_cancel', methods: ['GET', 'POST'])]
+    public function cancel(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
+    {
+        // Vérifier que l'utilisateur est soit l'organisateur soit un admin
+        if (!$this->isGranted('ROLE_ADMIN') && $this->getUser() !== $sortie->getOrganisateur()) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour annuler cette sortie.');
+        }
+
+        $form = $this->createForm(AnnulationType::class, $sortie);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Mettre à jour l'état de la sortie
+            $etat = $entityManager->getRepository(Etat::class)->findOneBy(['libelle' => Etat::ANNULEE]);
+            $sortie->setEtat($etat);
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'La sortie a été annulée avec succès.');
+            return $this->redirectToRoute('main_home');
+        }
+
+
+        return $this->render('sortie/cancel.html.twig', [
+            'sortie' => $sortie,
+            'form' => $form
+        ]);
+    }
+
+
 }
