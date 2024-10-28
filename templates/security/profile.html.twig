@@ -3,6 +3,7 @@
 {% block body %}
   <div class="container mt-5">
     <div class="row mb-5 align-items-center">
+      <!-- Pseudo et logo en haut à gauche -->
       <div class="col-auto">
         {# <i class="bi bi-person-circle" style="font-size: 2.5rem;"></i> #}
         <img src="{{ asset('uploads/images/' ~ user.filename) }}" alt="{{ user.pseudo }}" class="rounded-circle" style="width: 100px; height: 100px;">
@@ -11,32 +12,44 @@
         <h2 class="mb-0">{{ user.pseudo }}</h2>
       </div>
     </div>
-    <!-- Bulles -->
+
+    <!-- Bulles avec un style de carte similaire à la liste des sorties -->
     <div class="row text-center justify-content-center">
-      <!-- Modifier mon profil -->
+
+      <!-- Carte Modifier mon profil -->
       <div class="col-md-5 mb-3">
-        <div class="card shadow-sm">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Modifier mon profil</h5>
+          </div>
           <div class="card-body">
             <i class="bi bi-person-circle fs-1 text-primary"></i>
-            <h5 class="card-title mt-3">Modifier mon profil</h5>
-            <a href="{{ path('app_profile',{pseudo: user.pseudo}) }}" class="btn btn-outline-primary">Modifier</a>
+            <p class="card-text mt-3">Personnalisez votre profil utilisateur</p>
+            <a href="{{ path('app_profile', {pseudo: user.pseudo}) }}" class="btn btn-outline-primary">
+              <i class="bi bi-pencil"></i> Modifier
+            </a>
           </div>
         </div>
       </div>
 
-      <!-- Mes sorties -->
+      <!-- Carte Mes sorties -->
       <div class="col-md-5 mb-3">
-        <div class="card shadow-sm">
+        <div class="card">
+          <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Mes sorties</h5>
+          </div>
           <div class="card-body">
             <i class="bi bi-calendar2-event fs-1 text-success"></i>
-            <h5 class="card-title mt-3">Mes sorties</h5>
-            <a href="{{ path('security_profile_sorties', {pseudo: user.pseudo}) }}" class="btn btn-outline-success">Voir</a>
+            <p class="card-text mt-3">Consultez et gérez vos sorties</p>
+            <a href="{{ path('security_profile_sorties', {pseudo: user.pseudo}) }}" class="btn btn-outline-success">
+              <i class="bi bi-eye"></i> Voir
+            </a>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 {% endblock %}
 
-{% block title %}
-{% endblock %}
+{% block title %} Profil de {{ user.pseudo }} {% endblock %}

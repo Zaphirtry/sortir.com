@@ -48,9 +48,11 @@ class SecurityController extends AbstractController
   #[Route('/profile/sorties/{pseudo}', name: 'security_profile_sorties', methods: ['GET'], requirements: ['username' => '[a-zA-Z0-9_-]+'])]
   public function affiSorties(User $user,UserRepository $userRepository, SortieRepository $sortieRepository): Response{
     if ($this->getUser()->getPseudo() === $user->getPseudo()||$this->isGranted('ROLE_ADMIN')) {
-      $sorties = $sortieRepository->findByUser($user);
+      $sortiesParticipant = $sortieRepository->findByUserParticipant($user);
+      $sortieOrganisateur= $sortieRepository->findByUserOrganisateur($user);
       return $this->render('security/sortiesProfile.html.twig', [
-        'sorties' => $sorties,
+        'sortiesParticipant' => $sortiesParticipant,
+        'sortieOrganisateur' => $sortieOrganisateur,
         'user' => $user,
       ]);
     }else{

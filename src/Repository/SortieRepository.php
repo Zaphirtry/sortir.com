@@ -17,9 +17,16 @@ class SortieRepository extends ServiceEntityRepository
         parent::__construct($registry, Sortie::class);
     }
 
-  public function findByUser(User $user): array{
+  public function findByUserOrganisateur(User $user): array{
     return $this->createQueryBuilder('s')
-      ->andWhere('s.organisateur = :user OR :user MEMBER OF s.participant')
+      ->andWhere('s.organisateur = :user')
+      ->setParameter('user', $user)
+      ->getQuery()
+      ->getResult();
+  }
+  public function findByUserParticipant(User $user): array{
+    return $this->createQueryBuilder('s')
+      ->andWhere(':user MEMBER OF s.participant')
       ->setParameter('user', $user)
       ->getQuery()
       ->getResult();
