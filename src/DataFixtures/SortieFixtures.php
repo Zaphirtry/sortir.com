@@ -17,6 +17,9 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
       $faker = \Faker\Factory::create('fr_FR');
       $totalSorties = 20; // Limité à une sortie pour tester
 
+      $typesActivites = [
+        'Soirée', 'Concert', 'Spectacle', 'After-work', 'Exposition'
+      ];
       for ($i = 0; $i < $totalSorties; $i++) {
         $sortie = new Sortie();
         $dateHeureDebut = $this->genererDateHeureDebut($faker);
@@ -54,7 +57,10 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
           }
         }
 
-        $sortie->setNom('Sortie Test')
+        $typeActivite = $faker->randomElement($typesActivites);
+        $nom = $typeActivite . ' ' . $faker->word();
+
+        $sortie->setNom($nom)
           ->setDateHeureDebut($dateHeureDebut)
           ->setDateLimiteInscription($dateLimiteInscription)
           ->setNbInscriptionsMax(10)
