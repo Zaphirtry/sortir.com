@@ -16,22 +16,6 @@
     </div>
 {% endblock %}
 
-{# {% block javascripts %}
-    {{ parent() }}
+{% block javascripts %}
     {{ importmap('app') }}
-    <script type="module">
-        import { FormHandler } from '/assets/javascript/sortie-form.js';
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('Script chargé'); // Ajout d'un log pour debug
-            FormHandler.init({
-                villeSelect: '#{{ form.ville.vars.id }}',
-                lieuSelect: '#{{ form.lieu.vars.id }}',
-                rueInput: '#lieu-rue',
-                codePostalInput: '#lieu-code-postal',
-                latitudeInput: '#lieu-latitude',
-                longitudeInput: '#lieu-longitude'
-            });
-        });
-    </script>
-{% endblock %} #}
+{% endblock %}

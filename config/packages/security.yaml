@@ -39,7 +39,6 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/campus, roles: ROLE_ADMIN }
-        - { path: ^/villes, roles: ROLE_ADMIN }
         - { path: ^/, roles: ROLE_USER }
 
 

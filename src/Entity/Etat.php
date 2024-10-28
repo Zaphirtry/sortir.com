@@ -12,6 +12,25 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: EtatRepository::class)]
 class Etat
 {
+    public const CREEE = 'Créée';
+    public const OUVERTE = 'Ouverte';
+    public const CLOTUREE = 'Clôturée';
+    public const ACTIVITE_EN_COURS = 'Activité en cours';
+    public const PASSEE = 'Passée';
+    public const ANNULEE = 'Annulée';
+
+    public static function getEtats(): array
+    {
+        return [
+            self::CREEE,
+            self::OUVERTE,
+            self::CLOTUREE,
+            self::ACTIVITE_EN_COURS,
+            self::PASSEE,
+            self::ANNULEE,
+        ];
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -49,24 +68,26 @@ class Etat
         return $this->libelle;
     }
 
-    public function setLibelle(string $libelle): static
-    {
-        $this->libelle = $libelle;
-
-        return $this;
-    }
+     public function setLibelle(string $libelle): static
+     {
+         if (!in_array($libelle, self::getEtats())) {
+             throw new \InvalidArgumentException("État invalide");
+         }
+         $this->libelle = $libelle;
+         return $this;
+     }
 
     public function getDateCreated(): ?\DateTimeImmutable
     {
         return $this->dateCreated;
     }
 
-    public function setDateCreated(\DateTimeImmutable $dateCreated): static
-    {
-        $this->dateCreated = $dateCreated;
+     public function setDateCreated(\DateTimeImmutable $dateCreated): static
+     {
+         $this->dateCreated = $dateCreated;
 
-        return $this;
-    }
+         return $this;
+     }
 
     public function getDateModified(): ?\DateTimeImmutable
     {

@@ -69,7 +69,7 @@ class LieuFixtures extends Fixture implements DependentFixtureInterface
         ];
 
         foreach ($lieux as [$nom, $rue, $latitude, $longitude, $villeRef, $reference]) {
-            $ville = $this->getReference($villeRef);
+            $ville = $this->getReference($villeRef, Ville::class);
             $this->createLieu($nom, $rue, $latitude, $longitude, $ville, $manager, $reference);
         }
 
