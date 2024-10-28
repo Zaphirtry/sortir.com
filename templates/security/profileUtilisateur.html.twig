@@ -2,10 +2,13 @@
 
 {% block body %}
 
-    <h1>Profile de {{ user.pseudo }}</h1>
+<div class="card">
+  <div class="card-header bg-primary text-white">
+    <h1> Profil de {{ user.pseudo }}</h1>
+  </div>
     <form>
         <fieldset class="border p-4 rounded">
-            <legend class="mb-3">Informations personnelles</legend>
+            <legend class="mb-3">Contact</legend>
 
             <div class="mb-3">
                 <label for="prenom" class="form-label">Prénom :</label>
@@ -21,8 +24,17 @@
                 <label for="campus" class="form-label">Campus :</label>
                 <input type="text" id="campus" class="form-control" readonly value="{{ user.campus.nom }}">
             </div>
+          <div class="mb-3">
+            <label for="numero" class="form-label">Numéro de téléphone :</label>
+            <input type="text" id="numero" class="form-control" readonly value="{{ user.telephone}}">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email :</label>
+            <input type="text" id="email" class="form-control" readonly value="{{ user.email}}">
+          </div>
         </fieldset>
     </form>
+</div>
 {% endblock %}
 
 {% block title %}

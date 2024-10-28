@@ -1,13 +1,23 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<h1> Profil de {{ user.pseudo }}</h1>
 
+<div class="card">
+  <div class="card-header bg-primary text-white">
+    <h1> Profil de {{ user.pseudo }}</h1>
+  </div>
+<div class="card-body">
   {{ form_errors(userForm) }}
   {{ form_start(userForm, {'attr': {'data-turbo': 'false'}}) }}
   {{ form_widget(userForm) }}
-  <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
-  {{ form_end(userForm) }}
+  <div class="d-flex justify-content-center">
+    <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+  </div>
+
+  {{ form_end(userForm) }}</div>
+
+
+</div>
 {% endblock %}
 
 {% block title %}

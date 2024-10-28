@@ -31,6 +31,9 @@ class MainController extends AbstractController
       // Construire la requête de base
       $queryBuilder = $repository->createQueryBuilder('s');
 
+      $etatPasse = $etatRepository->findOneByLibelle('Passée');
+      $etatAnnulee = $etatRepository->findOneByLibelle('Annulée');
+
       if ($searchForm->isSubmitted() && $searchForm->isValid()) {
         // Récupérer les données du formulaire
         $data = $searchForm->getData();
@@ -54,27 +57,37 @@ class MainController extends AbstractController
             ->setParameter('campus', $data['campus']);
         }
         if(!empty($data['mesSortiesOrganisees'])){
+          if ($etatPasse){
           $queryBuilder->andWhere('s.organisateur = :organisateur')
-            ->setParameter('organisateur', $this->getUser());
+            ->andWhere('s.etat != :etat')
+            ->setParameter('organisateur', $this->getUser())
+            ->setParameter('etat', $etatPasse->getId());
+          }
         }
-        if(!empty($data['mesSortiesParticipe'])){
-          $queryBuilder->orWhere(':user MEMBER OF s.participant')
-            ->setParameter('user', $this->getUser());
-        }
+        if (!empty($data['mesSortiesParticipe'])) {
 
-        if (!empty($data['sortiesPassees'])) {
-          $etat = $etatRepository->findOneByLibelle('Passée');
-          if ($etat) {
-            $queryBuilder->andWhere('s.etat = :etat')
-              ->setParameter('etat', $etat->getId());
+          if ($etatPasse) {
+            $queryBuilder->andWhere(':user MEMBER OF s.participant')
+              ->andWhere('s.etat != :etat')
+              ->setParameter('user', $this->getUser())
+              ->setParameter('etat', $etatPasse->getId());
           }
         }
 
-        if (!empty($data['sortiesAnnulee'])) {
-          $etat = $etatRepository->findOneByLibelle('Annulée');
-          if ($etat) {
+        if (!empty($data['sortiesPassees'])) {
+          if ($etatPasse) {
             $queryBuilder->andWhere('s.etat = :etat')
-              ->setParameter('etat', $etat->getId());
+              ->setParameter('etat', $etatPasse->getId());
+          }
+        }else{
+          $queryBuilder->andWhere('s.etat != :etat')
+            ->setParameter('etat',$etatPasse->getId());
+        }
+
+        if (!empty($data['sortiesAnnulee'])) {
+          if ($etatAnnulee) {
+            $queryBuilder->andWhere('s.etat = :etatAnnulee')
+              ->setParameter('etatAnnulee', $etatAnnulee->getId());
           }
         }
       }
@@ -85,9 +98,6 @@ class MainController extends AbstractController
         'sorties' => $sorties,
         'searchForm' => $searchForm,
       ]);
-//        return $this->render('main/home.html.twig',[
-//           'sorties' => $sortieRepository->findAll()
-//        ]);
     }
 
 }
