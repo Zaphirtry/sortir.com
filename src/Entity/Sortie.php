@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: SortieRepository::class)]
 class Sortie
@@ -30,6 +31,7 @@ class Sortie
     #[ORM\Column]
     #[Assert\NotBlank(message:"Veuillez indiquer une date et une heure")]
     #[Assert\Type("\DateTimeImmutable")]
+    #[Assert\GreaterThan('today', message: 'La date de début doit être ultérieure à aujourd\'hui')]
     private ?\DateTimeImmutable $dateHeureDebut = null;
 
     #[ORM\Column]
@@ -40,6 +42,7 @@ class Sortie
     #[ORM\Column]
     #[Assert\NotBlank(message:"Veuillez indiquer la date de fin d'inscription")]
     #[Assert\Type("\DateTimeImmutable")]
+    #[Assert\GreaterThan('today', message: 'La date limite d\'inscription doit être ultérieure à aujourd\'hui')]
     private ?\DateTimeImmutable $dateLimiteInscription = null;
 
     #[ORM\Column]
@@ -89,6 +92,18 @@ class Sortie
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $motifAnnulation = null;
+
+    #[Assert\Callback]
+    public function validateDates(ExecutionContextInterface $context): void
+    {
+        if ($this->dateHeureDebut && $this->dateLimiteInscription) {
+            if ($this->dateLimiteInscription >= $this->dateHeureDebut) {
+                $context->buildViolation('La date limite d\'inscription doit être antérieure à la date de début de la sortie')
+                    ->atPath('dateLimiteInscription')
+                    ->addViolation();
+            }
+        }
+    }
 
     public function __construct()
     {

@@ -12,67 +12,81 @@ use Doctrine\Persistence\ObjectManager;
 
 class SortieFixtures extends Fixture implements DependentFixtureInterface
 {
+    private const TYPES_ACTIVITES = [
+        'Soirée', 'Concert', 'Spectacle', 'After-work', 'Exposition'
+    ];
+    
+    private const ETATS_VALIDES = ['Créée', 'Ouverte'];
+    private const NB_SORTIES = 20;
+    private const MIN_INSCRIPTIONS = 2;
+    private const MAX_INSCRIPTIONS = 20;
+
     public function load(ObjectManager $manager): void
     {
-      $faker = \Faker\Factory::create('fr_FR');
-      $totalSorties = 20; // Limité à une sortie pour tester
+        $faker = \Faker\Factory::create('fr_FR');
 
-      $typesActivites = [
-        'Soirée', 'Concert', 'Spectacle', 'After-work', 'Exposition'
-      ];
-      for ($i = 0; $i < $totalSorties; $i++) {
+        for ($i = 0; $i < self::NB_SORTIES; $i++) {
+            $this->creerSortie($manager, $faker);
+        }
+
+        $manager->flush();
+    }
+
+    private function creerSortie(ObjectManager $manager, \Faker\Generator $faker): void
+    {
         $sortie = new Sortie();
         $dateHeureDebut = $this->genererDateHeureDebut($faker);
         $dateLimiteInscription = $this->genererDateLimiteInscription($dateHeureDebut);
-        $dateCreation = $this->genererDateCreation($dateLimiteInscription);
-
-        // Simplifiez l'accès aux références pour tester
-        try {
-          $organisateur = $this->getReference('user_' . $faker->numberBetween(0, 9));
-          $sortie->setOrganisateur($organisateur)
-            ->setCampus($organisateur->getCampus());
-        } catch (\Exception $e) {
-          continue; // Ignore l'itération si l'utilisateur n'existe pas
+        
+        $organisateur = $this->getReference('user_' . $faker->numberBetween(0, 9));
+        if (!$organisateur) {
+            return;
         }
 
-        // Assurez-vous que l'état est valide
-        $etatLibelle = $faker->randomElement(['Créée', 'Ouverte']);
+        $etatLibelle = $faker->randomElement(self::ETATS_VALIDES);
         $etat = $manager->getRepository(Etat::class)->findOneBy(['libelle' => $etatLibelle]);
-        if ($etat) {
-          $sortie->setEtat($etat);
-        } else {
-          continue; // Ignore si l'état est invalide
+        if (!$etat) {
+            return;
         }
 
-        // Vérifiez la boucle de participants
+        $sortie
+            ->setOrganisateur($organisateur)
+            ->setCampus($organisateur->getCampus())
+            ->setEtat($etat)
+            ->setNom($this->genererNomSortie($faker))
+            ->setDateHeureDebut($dateHeureDebut)
+            ->setDateLimiteInscription($dateLimiteInscription)
+            ->setNbInscriptionsMax($faker->numberBetween(self::MIN_INSCRIPTIONS, self::MAX_INSCRIPTIONS))
+            ->setInfosSortie('Une sortie de test')
+            ->setDuree(120)
+            ->setLieu($this->getReference('lieu_' . $faker->numberBetween(1, 25)))
+            ->setDateCreated($this->genererDateCreation($dateLimiteInscription));
+
         if ($etatLibelle === 'Ouverte') {
-          $nbParticipants = $faker->numberBetween(1, $sortie->getNbInscriptionsMax());
-          $participants = [];
-          while (count($participants) < $nbParticipants) {
-            $participant = $this->getReference('user_' . $faker->numberBetween(0, 9));
-            if ($participant !== $sortie->getOrganisateur() && !in_array($participant, $participants)) {
-              $participants[] = $participant;
-              $sortie->addParticipant($participant);
-            }
-          }
+            $this->ajouterParticipants($sortie, $faker);
         }
-
-        $typeActivite = $faker->randomElement($typesActivites);
-        $nom = $typeActivite . ' ' . $faker->word();
-
-        $sortie->setNom($nom)
-          ->setDateHeureDebut($dateHeureDebut)
-          ->setDateLimiteInscription($dateLimiteInscription)
-          ->setNbInscriptionsMax(10)
-          ->setInfosSortie('Une sortie de test')
-          ->setDuree(120)
-          ->setLieu($this->getReference('lieu_' . $faker->numberBetween(1, 25)))
-          ->setDateCreated($dateCreation);
 
         $manager->persist($sortie);
-      }
+    }
 
-      $manager->flush();
+    private function genererNomSortie(\Faker\Generator $faker): string
+    {
+        $typeActivite = $faker->randomElement(self::TYPES_ACTIVITES);
+        return $typeActivite . ' ' . $faker->word();
+    }
+
+    private function ajouterParticipants(Sortie $sortie, \Faker\Generator $faker): void
+    {
+        $nbParticipants = $faker->numberBetween(1, $sortie->getNbInscriptionsMax());
+        $participants = [];
+        
+        while (count($participants) < $nbParticipants) {
+            $participant = $this->getReference('user_' . $faker->numberBetween(0, 9));
+            if ($participant !== $sortie->getOrganisateur() && !in_array($participant, $participants)) {
+                $participants[] = $participant;
+                $sortie->addParticipant($participant);
+            }
+        }
     }
 
     private function genererDateHeureDebut(\Faker\Generator $faker): \DateTimeImmutable
