@@ -4,86 +4,62 @@ namespace App\DataFixtures;
 
 use App\Entity\Sortie;
 use App\Entity\Etat;
+use App\Entity\Lieu;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 class SortieFixtures extends Fixture implements DependentFixtureInterface
 {
-    private function determinerEtat(\DateTime $dateHeureDebut, \DateTime $dateLimiteInscription): Etat
-    {
-        $maintenant = new \DateTime();
-        
-        if ($dateHeureDebut < $maintenant) {
-            return $this->getReference('etat_5'); // Passée
-        } elseif ($dateHeureDebut == $maintenant) {
-            return $this->getReference('etat_4'); // Activité en cours
-        } elseif ($dateLimiteInscription < $maintenant) {
-            return $this->getReference('etat_3'); // Clôturée
-        } else {
-            return $this->getReference('etat_2'); // Ouverte
-        }
-    }
-
-    private function distribuerEtats(ObjectManager $manager): array
-    {
-        $etats = $manager->getRepository(Etat::class)->findAll();
-        $distribution = [];
-        foreach ($etats as $etat) {
-            $distribution[$etat->getId()] = 3; // Au moins 3 sorties par état
-        }
-        return $distribution;
-    }
-
     public function load(ObjectManager $manager): void
     {
         $faker = \Faker\Factory::create('fr_FR');
-        
+
         $typesActivites = [
-            'Soirée', 'Concert', 'Spectacle', 'After-work', 'Exposition',
-            'Visite guidée', 'Cinéma', 'Théâtre', 'Festival'
+            'Soirée', 'Concert', 'Spectacle', 'After-work', 'Exposition'
         ];
 
-        $distribution = $this->distribuerEtats($manager);
-        $totalSorties = max(array_sum($distribution), 30); // Au moins 30 sorties
+        $totalSorties = 5; // Nombre fixe de sorties
 
         for ($i = 0; $i < $totalSorties; $i++) {
             $sortie = new Sortie();
-            
-            $dateHeureDebut = $faker->dateTimeBetween('-1 month', '+3 months');
-            $dateLimiteInscription = clone $dateHeureDebut;
-            $dateLimiteInscription->modify('-2 days');
 
-            $organisateur = $this->getReference('user_' . $faker->numberBetween(0, 9));
-            
+            $dateHeureDebut = $this->genererDateHeureDebut($faker);
+            $dateLimiteInscription = $this->genererDateLimiteInscription($dateHeureDebut);
+            $dateCreation = $this->genererDateCreation($dateLimiteInscription);
+
+            $organisateur = $this->getReference('user_' . $faker->numberBetween(0, 9), User::class);
+
             $typeActivite = $faker->randomElement($typesActivites);
-            $nom = $typeActivite . ' : ' . $faker->words(3, true);
+            $nom = $typeActivite . ' ' . $faker->word();
 
             $sortie->setNom($nom)
-                ->setDateHeureDebut(\DateTimeImmutable::createFromMutable($dateHeureDebut))
-                ->setDateLimiteInscription(\DateTimeImmutable::createFromMutable($dateLimiteInscription))
-                ->setNbInscriptionsMax($faker->numberBetween(5, 50))
-                ->setInfosSortie($faker->text(100))
+                ->setDateHeureDebut($dateHeureDebut)
+                ->setDateLimiteInscription($dateLimiteInscription)
+                ->setNbInscriptionsMax($faker->numberBetween(5, 20))
+                ->setInfosSortie($faker->text(255))
                 ->setDuree($faker->randomElement([60, 90, 120, 180, 240]))
                 ->setOrganisateur($organisateur)
                 ->setCampus($organisateur->getCampus())
-                ->setLieu($this->getReference('lieu_' . $faker->numberBetween(1, 25)))
-                ->setDateCreated(new \DateTimeImmutable());
+                ->setLieu($this->getReference('lieu_' . $faker->numberBetween(1, 25), Lieu::class))
+                ->setDateCreated($dateCreation);
 
-            // Attribution d'un état en respectant la distribution
-            $etatId = $this->attribuerEtat($distribution);
-            $etat = $manager->getRepository(Etat::class)->find($etatId);
+            $etatLibelle = $faker->randomElement([Etat::CREEE, Etat::OUVERTE]);
+            $etat = $manager->getRepository(Etat::class)->findOneBy(['libelle' => $etatLibelle]);
             $sortie->setEtat($etat);
 
-            // Ajout aléatoire de participants
-            $nbParticipants = $faker->numberBetween(0, min(10, $sortie->getNbInscriptionsMax()));
-            for ($j = 0; $j < $nbParticipants; $j++) {
-                $participant = $this->getReference('user_' . $faker->numberBetween(0, 9));
-                if (!$sortie->getParticipant()->contains($participant)) {
-                    $sortie->addParticipant($participant);
+            if ($etatLibelle === 'Ouverte') {
+                $nbParticipants = $faker->numberBetween(1, $sortie->getNbInscriptionsMax());
+                $participants = [];
+                while (count($participants) < $nbParticipants) {
+                    $participant = $this->getReference('user_' . $faker->numberBetween(0, 9), User::class);
+                    if ($participant !== $sortie->getOrganisateur() && !in_array($participant, $participants)) {
+                        $participants[] = $participant;
+                        $sortie->addParticipant($participant);
+                    }
                 }
             }
-
 
             $manager->persist($sortie);
         }
@@ -91,15 +67,50 @@ class SortieFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    private function attribuerEtat(array &$distribution): int
+    private function genererDateHeureDebut(\Faker\Generator $faker): \DateTimeImmutable
     {
-        $etatsDisponibles = array_filter($distribution, fn($count) => $count > 0);
-        if (empty($etatsDisponibles)) {
-            return array_rand($distribution); // Si tous les états ont été utilisés, on choisit aléatoirement
-        }
-        $etatId = array_rand($etatsDisponibles);
-        $distribution[$etatId]--;
-        return $etatId;
+        $maintenant = new \DateTimeImmutable();
+        $periodes = [
+            'passé' => [$maintenant->modify('-1 month'), $maintenant],
+            'futur proche' => [$maintenant, $maintenant->modify('+1 month')],
+            'futur lointain' => [$maintenant->modify('+1 month'), $maintenant->modify('+3 months')],
+        ];
+
+        $periode = $faker->randomElement(array_keys($periodes));
+
+        $debut = $periodes[$periode][0];
+        $fin = $periodes[$periode][1];
+
+        return $this->dateTimeBetween($faker, $debut, $fin);
+    }
+
+    private function genererDateLimiteInscription(\DateTimeImmutable $dateHeureDebut): \DateTimeImmutable
+    {
+        $delaiMinimum = new \DateInterval('P1D'); // 1 jour minimum
+        $delaiMaximum = new \DateInterval('P7D'); // 7 jours maximum
+
+        $dateMinimum = $dateHeureDebut->sub($delaiMaximum);
+        $dateMaximum = $dateHeureDebut->sub($delaiMinimum);
+
+        return $this->dateTimeBetween(\Faker\Factory::create(), $dateMinimum, $dateMaximum);
+    }
+
+    private function genererDateCreation(\DateTimeImmutable $dateLimiteInscription): \DateTimeImmutable
+    {
+        $delaiMaximum = new \DateInterval('P30D'); // 30 jours maximum avant la date limite d'inscription
+
+        $dateMinimum = $dateLimiteInscription->sub($delaiMaximum);
+        $dateMaximum = $dateLimiteInscription;
+
+        return $this->dateTimeBetween(\Faker\Factory::create(), $dateMinimum, $dateMaximum);
+    }
+
+    private function dateTimeBetween(\Faker\Generator $faker, \DateTimeImmutable $start, \DateTimeImmutable $end): \DateTimeImmutable
+    {
+        $startTimestamp = $start->getTimestamp();
+        $endTimestamp = $end->getTimestamp();
+        $randomTimestamp = $faker->numberBetween($startTimestamp, $endTimestamp);
+        return (new \DateTimeImmutable())->setTimestamp($randomTimestamp);
     }
 
     public function getDependencies(): array

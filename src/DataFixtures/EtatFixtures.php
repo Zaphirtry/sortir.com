@@ -10,21 +10,11 @@ class EtatFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $etats = [
-            'Créée',
-            'Ouverte',
-            'Clôturée',
-            'Activité en cours',
-            'Passée',
-            'Annulée'
-        ];
-
-        foreach ($etats as $index => $libelle) {
+        foreach (Etat::getEtats() as $libelle) {
             $etat = new Etat();
             $etat->setLibelle($libelle);
             $etat->setDateCreated(new \DateTimeImmutable('2024-10-22'));
             $manager->persist($etat);
-            $this->addReference('etat_' . ($index + 1), $etat);
         }
 
         $manager->flush();

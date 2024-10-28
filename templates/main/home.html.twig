@@ -42,7 +42,7 @@
                     <tr>
                         <td>{{ sortie.nom }}</td>
                         <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
-                        <td>{{ sortie.dateLimiteInscription|date('d/m/Y') }}</td>
+                        <td>{{ sortie.dateLimiteInscription|date('d/m/Y H:i') }}</td>
                         <td>{{ sortie.participant|length }}/{{ sortie.nbInscriptionsMax }}</td>
                         <td><span class="badge bg-info">{{ sortie.etat.libelle }}</span></td>
                         <td class="text-center">
@@ -58,8 +58,7 @@
                             <a href="{{ path('sortie_show', {'id': sortie.id}) }}" class="btn btn-sm btn-primary">
                                 <i class="bi bi-eye"></i> Afficher
                             </a>
-                            {# TODO: Ajouter les boutons d'actions : Se désister, S'inscrire, Modifier, Annuler #}
-
+                            {# Boutons d'actions : Se désister, S'inscrire, Modifier, Annuler #}
 
                                 {% if app.user and app.user not in sortie.participant and (sortie.etat.libelle == 'Ouverte') %}
                                     <form action="{{ path('sortie_inscrire', {'id': sortie.id}) }}" method="POST" style="display: inline;">
@@ -69,14 +68,18 @@
                                     </form>
                                 {% endif %}
 
-
                                 {% if app.user and app.user in sortie.participant and (sortie.etat.libelle == 'Ouverte' or sortie.etat.libelle == 'Clôturée') %}
-                                    {# Ajoutez ici le bouton "Se désister" si nécessaire #}
                                     <form action="{{ path('sortie_desister', {'id': sortie.id}) }}" method="POST" style="display: inline;">
                                     <button type="submit " class="btn btn-sm btn-warning">
                                         <i class="bi bi-person-dash"></i> Se désister
                                     </button>
                                     </form>
+                                {% endif %}
+
+                                {% if sortie.organisateur == app.user %}
+                                    <a href="{{ path('sortie_edit', {'id': sortie.id}) }}" class="btn btn-warning btn-sm shadow-sm">
+                                        <i class="bi bi-pencil-square me-2"></i>Modifier
+                                    </a>
                                 {% endif %}
                         </td>
                     </tr>

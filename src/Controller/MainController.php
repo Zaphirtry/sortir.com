@@ -8,6 +8,7 @@ use App\Entity\Etat;
 use App\Entity\Sortie;
 use App\Entity\Campus;
 use App\Form\FiltresType;
+use App\GestionEtatSortie\CheckerEtatSortie;
 use App\Repository\EtatRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,9 +19,15 @@ use Symfony\Component\HttpFoundation\Request;
 
 class MainController extends AbstractController
 {
+    public function __construct(private readonly CheckerEtatSortie $checkerEtatSortie)
+    {
+    }
+
     #[Route('/', name: 'main_home', methods: ['GET','POST'])]
     public function home(SortieRepository $sortieRepository,EtatRepository $etatRepository,Request $request, EntityManagerInterface $em): Response
     {
+        $this->checkerEtatSortie->checkAndUpdateStates();
+
       // Créer le formulaire de recherche
       $searchForm = $this->createForm(FiltresType::class);
       $searchForm->handleRequest($request);
