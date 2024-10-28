@@ -6,13 +6,16 @@
     <div class="card">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h1 class="mb-0">Détails de la Sortie proposée par <strong>{{ sortie.organisateur.pseudo }}</strong></h1>
+            <span class="badge bg-info fs-5">{{ sortie.etat.libelle }}</span>
             <div>
                 <a href="{{ path('main_home') }}" class="btn btn-light btn-sm me-2">
                     <i class="bi bi-arrow-left"></i> Retour à la liste
                 </a>
-                <a href="{{ path('sortie_edit', {'id': sortie.id}) }}" class="btn btn-warning btn-sm">
-                    <i class="bi bi-pencil"></i> Modifier
-                </a>
+                {% if sortie.organisateur == app.user %}
+                    <a href="{{ path('sortie_edit', {'id': sortie.id}) }}" class="btn btn-warning btn-sm shadow-sm ">
+                        <i class="bi bi-pencil-square me-2"></i> Modifier
+                    </a>
+                {% endif %}
             </div>
         </div>
         <div class="card-body">
@@ -84,7 +87,24 @@
 
             {# Liste des participants #}
             <div class="mt-4">
-                <h3>Liste des participants ({{ sortie.participant|length }}/{{ sortie.nbInscriptionsMax }})</h3>
+                <div class="d-flex gap-4 align-items-center">
+                    <h3>Liste des participants ({{ sortie.participant|length }}/{{ sortie.nbInscriptionsMax }})</h3>
+                    {% if app.user and app.user not in sortie.participant and (sortie.etat.libelle == 'Ouverte') %}
+                    <form action="{{ path('sortie_inscrire', {'id': sortie.id}) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-sm btn-success">
+                            <i class="bi bi-person-plus"></i> S'inscrire
+                        </button>
+                        </form>
+                    {% endif %}
+
+                    {% if app.user and app.user in sortie.participant and (sortie.etat.libelle == 'Ouverte' or sortie.etat.libelle == 'Clôturée') %}
+                    <form action="{{ path('sortie_desister', {'id': sortie.id}) }}" method="POST" style="display: inline;">
+                        <button type="submit " class="btn btn-sm btn-warning">
+                            <i class="bi bi-person-dash"></i> Se désister
+                        </button>
+                        </form>
+                    {% endif %}
+                </div>
                 <table class="table table-striped">
                     <thead>
                         <tr>

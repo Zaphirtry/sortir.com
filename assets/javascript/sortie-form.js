@@ -1,24 +1,25 @@
 export const FormHandler = {
+    // Cache pour stocker les résultats des requêtes
+    cache: {
+        lieux: new Map(),
+        lieuDetails: new Map()
+    },
+
     init(selectors) {
-        console.log('Initialisation avec les sélecteurs:', selectors);
-        this.villeSelect = document.querySelector(selectors.villeSelect);
-        this.lieuSelect = document.querySelector(selectors.lieuSelect);
-        this.rueInput = document.querySelector(selectors.rueInput);
-        this.codePostalInput = document.querySelector(selectors.codePostalInput);
-        this.latitudeInput = document.querySelector(selectors.latitudeInput);
-        this.longitudeInput = document.querySelector(selectors.longitudeInput);
+        // Utilisation de la déstructuration pour plus de clarté
+        const elements = ['villeSelect', 'lieuSelect', 'rueInput', 'codePostalInput', 'latitudeInput', 'longitudeInput']
+            .reduce((acc, key) => {
+                const element = document.querySelector(selectors[key]);
+                if (!element) console.error(`${key} non trouvé`);
+                acc[key] = element;
+                return acc;
+            }, {});
 
-        // Vérification des éléments trouvés
-        if (!this.villeSelect) console.error('villeSelect non trouvé');
-        if (!this.lieuSelect) console.error('lieuSelect non trouvé');
-        if (!this.rueInput) console.error('rueInput non trouvé');
-        if (!this.codePostalInput) console.error('codePostalInput non trouvé');
-        if (!this.latitudeInput) console.error('latitudeInput non trouvé');
-        if (!this.longitudeInput) console.error('longitudeInput non trouvé');
+        Object.assign(this, elements);
 
+        this.baseUrl = window.location.origin;
         this.setupEventListeners();
         
-        // Si une ville est déjà sélectionnée (cas de l'édition)
         if (this.villeSelect.value) {
             this.initializeExistingData();
         } else {
@@ -26,57 +27,51 @@ export const FormHandler = {
         }
     },
 
-    disableLieuSelect() {
-        this.lieuSelect.disabled = true;
-        this.lieuSelect.innerHTML = '<option value="">Sélectionnez d\'abord une ville</option>';
-    },
-
     setupEventListeners() {
-        this.villeSelect.addEventListener('change', (e) => this.handleVilleChange(e));
-        this.lieuSelect.addEventListener('change', (e) => this.handleLieuChange(e));
+        // Utilisation de la délégation d'événements
+        this.villeSelect.addEventListener('change', this.handleVilleChange.bind(this));
+        this.lieuSelect.addEventListener('change', this.handleLieuChange.bind(this));
     },
 
     async handleVilleChange(event) {
         const villeId = event.target.value;
-        console.log('Ville sélectionnée:', villeId);
         
         if (!villeId) {
             this.disableLieuSelect();
             this.clearLieuDetails();
             return;
         }
-        await this.fetchAndPopulateLieux(villeId);
-    },
 
-    clearLieuDetails() {
-        this.rueInput.value = '';
-        this.codePostalInput.value = '';
-        this.latitudeInput.value = '';
-        this.longitudeInput.value = '';
+        // Utilisation du cache
+        if (this.cache.lieux.has(villeId)) {
+            this.populateLieux(this.cache.lieux.get(villeId));
+        } else {
+            await this.fetchAndPopulateLieux(villeId);
+        }
     },
 
     async fetchAndPopulateLieux(villeId) {
         try {
-            const baseUrl = window.location.origin; // Obtient l'URL de base du site
-            const url = `${baseUrl}/api/ville/${villeId}/lieux`;
-            console.log('URL complète appelée:', url);
-            
-            const response = await fetch(url);
-            console.log('Statut de la réponse:', response.status);
-            
+            const response = await fetch(`${this.baseUrl}/api/ville/${villeId}/lieux`);
             const lieux = await response.json();
-            console.log('Lieux reçus:', lieux);
             
-            this.lieuSelect.innerHTML = '<option value="">Sélectionnez un lieu</option>';
-            lieux.forEach(lieu => {
-                const option = new Option(lieu.nom, lieu.id);
-                this.lieuSelect.add(option);
-            });
-            this.lieuSelect.disabled = false;
+            // Mise en cache des résultats
+            this.cache.lieux.set(villeId, lieux);
+            this.populateLieux(lieux);
         } catch (error) {
-            console.error('Erreur complète:', error);
+            console.error('Erreur:', error);
             this.disableLieuSelect();
         }
+    },
+
+    populateLieux(lieux) {
+        const options = lieux.map(lieu => 
+            new Option(lieu.nom, lieu.id)
+        );
+        
+        this.lieuSelect.innerHTML = '<option value="">Sélectionnez un lieu</option>';
+        this.lieuSelect.append(...options);
+        this.lieuSelect.disabled = false;
     },
 
     async handleLieuChange(event) {
@@ -85,29 +80,44 @@ export const FormHandler = {
             this.clearLieuDetails();
             return;
         }
-        await this.fetchLieuDetails(lieuId);
+
+        // Utilisation du cache
+        if (this.cache.lieuDetails.has(lieuId)) {
+            this.updateLieuDetails(this.cache.lieuDetails.get(lieuId));
+        } else {
+            await this.fetchLieuDetails(lieuId);
+        }
     },
 
     async fetchLieuDetails(lieuId) {
         try {
-            const baseUrl = window.location.origin;
-            const url = `${baseUrl}/api/lieu-details/${lieuId}`;
-            console.log('URL complète appelée pour les détails:', url);
-            
-            const response = await fetch(url);
-            console.log('Statut de la réponse détails:', response.status);
-            
+            const response = await fetch(`${this.baseUrl}/api/lieu-details/${lieuId}`);
             const lieu = await response.json();
-            console.log('Détails du lieu reçus:', lieu);
             
-            this.rueInput.value = lieu.rue || '';
-            this.codePostalInput.value = lieu.ville.codePostal || '';
-            this.latitudeInput.value = lieu.latitude || '';
-            this.longitudeInput.value = lieu.longitude || '';
+            // Mise en cache des résultats
+            this.cache.lieuDetails.set(lieuId, lieu);
+            this.updateLieuDetails(lieu);
         } catch (error) {
             console.error('Erreur:', error);
             this.clearLieuDetails();
         }
+    },
+
+    updateLieuDetails(lieu) {
+        this.rueInput.value = lieu.rue || '';
+        this.codePostalInput.value = lieu.ville.codePostal || '';
+        this.latitudeInput.value = lieu.latitude || '';
+        this.longitudeInput.value = lieu.longitude || '';
+    },
+
+    clearLieuDetails() {
+        ['rueInput', 'codePostalInput', 'latitudeInput', 'longitudeInput']
+            .forEach(input => this[input].value = '');
+    },
+
+    disableLieuSelect() {
+        this.lieuSelect.disabled = true;
+        this.lieuSelect.innerHTML = '<option value="">Sélectionnez d\'abord une ville</option>';
     },
 
     async initializeExistingData() {

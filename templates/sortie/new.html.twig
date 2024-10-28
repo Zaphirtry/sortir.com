@@ -17,20 +17,5 @@
 {% endblock %}
 
 {% block javascripts %}
-    {{ parent() }}
     {{ importmap('app') }}
-    <script type="module">
-        import { FormHandler } from '/assets/javascript/sortie-form.js';
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            FormHandler.init({
-                villeSelect: '#{{ form.ville.vars.id }}',
-                lieuSelect: '#{{ form.lieu.vars.id }}',
-                rueInput: '#lieu-rue',
-                codePostalInput: '#lieu-code-postal',
-                latitudeInput: '#lieu-latitude',
-                longitudeInput: '#lieu-longitude'
-            });
-        });
-    </script>
 {% endblock %}
