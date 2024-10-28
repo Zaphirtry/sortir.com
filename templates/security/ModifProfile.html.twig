@@ -10,6 +10,9 @@
   {{ form_errors(userForm) }}
   {{ form_start(userForm, {'attr': {'data-turbo': 'false'}}) }}
   {{ form_widget(userForm) }}
+  {% if user.filename is not empty %}
+    <img src="{{ asset('uploads/images/' ~ user.filename) }}" alt="Avatar" class="rounded-circle" width="200" height="200">
+  {% endif %}
   <div class="d-flex justify-content-center">
     <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
   </div>

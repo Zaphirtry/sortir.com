@@ -46,8 +46,6 @@ class RegistrationController extends AbstractController
                 } catch (\Exception $e) {
                     // Ajoutez un message flash d'erreur
                     $this->addFlash('error', "Une erreur s'est produite lors du téléchargement de l'image. Veuillez réessayer.");
-                    // Vous pouvez également logger l'erreur pour le débogage
-                    // $this->logger->error('Erreur de téléchargement d\'image : ' . $e->getMessage());
                 }
             }
 
