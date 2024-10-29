@@ -33,32 +33,38 @@
                         <tr>
                             <th>Nom de la sortie</th>
                             <th>Date de la sortie</th>
-                            <th>Date limite d'inscription</th>
-                            <th>Inscrits/Places</th>
-                            <th>État</th>
-                            <th>Inscrit</th>
-                            <th>Organisateur</th>
-                            <th>Actions</th>
+                            <th>Lieu</th>
+                            <th class="d-none d-md-table-cell">Date limite d'inscription</th>
+                            <th class="d-none d-md-table-cell">Inscrits/Places</th>
+                            <th class="d-none d-md-table-cell">État</th>
+                            <th class="d-none d-md-table-cell">Inscrit</th>
+                            <th class="d-none d-md-table-cell">Organisateur</th>
+                            <th class="d-none d-md-table-cell">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                     {% for sortie in sorties %}
                         <tr>
-                            <td>{{ sortie.nom }}</td>
+                            <td>
+                                <a href="{{ path('sortie_show', {'id': sortie.id}) }}" class="btn btn-sm btn-primary d-block d-md-none">
+                                    {{ sortie.nom }}
+                                </a>
+                                <span class="d-none d-md-inline">
+                                    {{ sortie.nom }}
+                                </span>
+                            </td>
                             <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
-                            <td>{{ sortie.dateLimiteInscription|date('d/m/Y H:i') }}</td>
-                            <td>{{ sortie.participant|length }}/{{ sortie.nbInscriptionsMax }}</td>
-                            <td><span class="badge bg-info">{{ sortie.etat.libelle }}</span></td>
-                            <td class="text-center">
+                            <td>{{ sortie.lieu.nom }}</td>
+                            <td class="d-none d-md-table-cell">{{ sortie.dateLimiteInscription|date('d/m/Y H:i') }}</td>
+                            <td class="d-none d-md-table-cell">{{ sortie.participant|length }}/{{ sortie.nbInscriptionsMax }}</td>
+                            <td class="d-none d-md-table-cell"><span class="badge bg-info">{{ sortie.etat.libelle }}</span></td>
+                            <td class="d-none d-md-table-cell text-center">
                                 {% if app.user in sortie.participant %}
                                     <span class="fw-bold text-success">X</span>
                                 {% endif %}
                             </td>
-                            <td><a href="{{ path('app_profile', {'pseudo': sortie.organisateur.pseudo}) }}">{{ sortie.organisateur.pseudo }}</a></td>
-
-
-{#                        Colonne Afficher#}
-                            <td>
+                            <td class="d-none d-md-table-cell"><a href="{{ path('app_profile', {'pseudo': sortie.organisateur.pseudo}) }}">{{ sortie.organisateur.pseudo }}</a></td>
+                            <td class="d-none d-md-table-cell">
                                 <div class="d-flex gap-1">
                                     {# Bouton Afficher #}
                                     <a href="{{ path('sortie_show', {'id': sortie.id}) }}" class="btn btn-sm btn-primary">
