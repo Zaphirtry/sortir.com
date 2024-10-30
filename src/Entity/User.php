@@ -87,11 +87,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private bool $isActive = true;
 
+    /**
+     * @var Collection<int, Groupe>
+     */
+    #[ORM\ManyToMany(targetEntity: Groupe::class, mappedBy: 'membre')]
+    private Collection $groupes;
+
+    /**
+     * @var Collection<int, Groupe>
+     */
+    #[ORM\OneToMany(targetEntity: Groupe::class, mappedBy: 'createur', orphanRemoval: true)]
+    private Collection $groupescree;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
         $this->participation = new ArrayCollection();
         $this->dateModified = new \DateTimeImmutable();
+        $this->groupes = new ArrayCollection();
+        $this->groupescree = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -331,6 +345,63 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsActive(bool $isActive): self
     {
         $this->isActive = $isActive;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Groupe>
+     */
+    public function getGroupes(): Collection
+    {
+        return $this->groupes;
+    }
+
+    public function addGroupe(Groupe $groupe): static
+    {
+        if (!$this->groupes->contains($groupe)) {
+            $this->groupes->add($groupe);
+            $groupe->addMembre($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupe(Groupe $groupe): static
+    {
+        if ($this->groupes->removeElement($groupe)) {
+            $groupe->removeMembre($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Groupe>
+     */
+    public function getGroupescree(): Collection
+    {
+        return $this->groupescree;
+    }
+
+    public function addGroupescree(Groupe $groupescree): static
+    {
+        if (!$this->groupescree->contains($groupescree)) {
+            $this->groupescree->add($groupescree);
+            $groupescree->setCreateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupescree(Groupe $groupescree): static
+    {
+        if ($this->groupescree->removeElement($groupescree)) {
+            // set the owning side to null (unless already changed)
+            if ($groupescree->getCreateur() === $this) {
+                $groupescree->setCreateur(null);
+            }
+        }
+
         return $this;
     }
 }
