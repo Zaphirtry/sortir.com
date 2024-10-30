@@ -93,6 +93,12 @@ class Sortie
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $motifAnnulation = null;
 
+    /**
+     * @var Collection<int, Message>
+     */
+    #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'sortie', orphanRemoval: true)]
+    private Collection $messages;
+
     #[Assert\Callback]
     public function validateDates(ExecutionContextInterface $context): void
     {
@@ -109,6 +115,7 @@ class Sortie
     {
       $this->participant = new ArrayCollection();
       $this->dateCreated = new \DateTimeImmutable();
+      $this->messages = new ArrayCollection();
     }
 
 
@@ -293,6 +300,36 @@ class Sortie
     public function setMotifAnnulation(?string $motifAnnulation): static
     {
         $this->motifAnnulation = $motifAnnulation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): static
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages->add($message);
+            $message->setSortie($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): static
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getSortie() === $this) {
+                $message->setSortie(null);
+            }
+        }
 
         return $this;
     }
