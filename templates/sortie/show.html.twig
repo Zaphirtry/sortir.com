@@ -38,61 +38,100 @@
                     <h3>Informations générales</h3>
                     <table class="table">
                         <tbody>
-                            <tr>
-                                <th>Nom de la sortie</th>
-                                <td>{{ sortie.nom }}</td>
-                            </tr>
-                            <tr>
-                                <th>Date et heure</th>
-                                <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
-                            </tr>
-                            <tr>
-                                <th>Date limite d'inscription</th>
-                                <td>{{ sortie.dateLimiteInscription|date('d/m/Y H:i') }}</td>
-                            </tr>
-                            <tr>
-                                <th>Nombre de places</th>
-                                <td>{{ sortie.participant|length }}/{{ sortie.nbInscriptionsMax }}</td>
-                            </tr>
-                            <tr>
-                                <th>Durée</th>
-                                <td>{{ sortie.duree }} minutes</td>
-                            </tr>
-                            <tr>
-                                <th>Description</th>
-                                <td>{{ sortie.infosSortie }}</td>
-                            </tr>
+                        <tr>
+                            <th>Nom de la sortie</th>
+                            <td>{{ sortie.nom }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date et heure</th>
+                            <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date limite d'inscription</th>
+                            <td>{{ sortie.dateLimiteInscription|date('d/m/Y H:i') }}</td>
+                        </tr>
+                        <tr>
+                            <th>Nombre de places</th>
+                            <td>{{ sortie.participant|length }}/{{ sortie.nbInscriptionsMax }}</td>
+                        </tr>
+                        <tr>
+                            <th>Durée</th>
+                            <td>{{ sortie.duree }} minutes</td>
+                        </tr>
+                        <tr>
+                            <th>Description</th>
+                            <td>{{ sortie.infosSortie }}</td>
+                        </tr>
                         </tbody>
                     </table>
+                    <div>
+                        <h2>Envoyer un message</h2>
+                        {{ form_errors(messageForm) }}
+                        {{ include('message/_form.html.twig', { 'form': messageForm }) }}
+                        <h2>Messages</h2>
+                        <ul class="list-unstyled">
+                            {% for message in messages %}
+                                <li class="mb-3 border-bottom pb-2">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <strong>{{ message.creator.pseudo }}</strong>
+                                            - {{ message.dateCreated|date('Y-m-d H:i') }}
+                                            <p class="mb-1">{{ message.message }}</p>
+                                        </div>
+                                        {% if app.user == message.creator %}
+                                            <div class="btn-group">
+                                                <a href="{{ path('app_message_edit', {'id': message.id}) }}" 
+                                                   class="btn btn-sm btn-warning me-1">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <form method="post" action="{{ path('app_message_delete', {'id': message.id}) }}" 
+                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?');" 
+                                                      style="display: inline-block;">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ message.id) }}">
+                                                    <button class="btn btn-sm btn-danger">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% else %}
+                                <li>Aucun message pour cette sortie.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
                 <div class="col-md-6">
                     <h3>Lieu de la sortie</h3>
                     <table class="table">
                         <tbody>
-                            <tr>
-                                <th>Ville</th>
-                                <td>{{ sortie.lieu.ville.nom }}</td>
-                            </tr>
-                            <tr>
-                                <th>Lieu</th>
-                                <td>{{ sortie.lieu.nom }}</td>
-                            </tr>
-                            <tr>
-                                <th>Rue</th>
-                                <td>{{ sortie.lieu.rue }}</td>
-                            </tr>
-                            <tr>
-                                <th>Code postal</th>
-                                <td>{{ sortie.lieu.ville.codePostal }}</td>
-                            </tr>
+                        <tr>
+                            <th>Ville</th>
+                            <td>{{ sortie.lieu.ville.nom }}</td>
+                        </tr>
+                        <tr>
+                            <th>Lieu</th>
+                            <td>{{ sortie.lieu.nom }}</td>
+                        </tr>
+                        <tr>
+                            <th>Rue</th>
+                            <td>{{ sortie.lieu.rue }}</td>
+                        </tr>
+                        <tr>
+                            <th>Code postal</th>
+                            <td>{{ sortie.lieu.ville.codePostal }}</td>
+                        </tr>
                         </tbody>
                     </table>
                     <div id="map" style="height: 400px;"></div>
                     <div class="mt-3">
-                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ sortie.lieu.latitude }},{{ sortie.lieu.longitude }}" target="_blank" class="btn btn-primary">
+                        <a href="https://www.google.com/maps/dir/?api=1&destination={{ sortie.lieu.latitude }},{{ sortie.lieu.longitude }}"
+                           target="_blank" class="btn btn-primary">
                             <i class="bi bi-geo-alt"></i> Ouvrir dans Google Maps
                         </a>
-                        <a href="https://waze.com/ul?ll={{ sortie.lieu.latitude }},{{ sortie.lieu.longitude }}&navigate=yes" target="_blank" class="btn btn-primary">
+                        <a href="https://waze.com/ul?ll={{ sortie.lieu.latitude }},{{ sortie.lieu.longitude }}&navigate=yes"
+                           target="_blank" class="btn btn-primary">
                             <i class="bi bi-geo-alt"></i> Ouvrir dans Waze
                         </a>
                     </div>
@@ -104,49 +143,52 @@
                 <div class="d-flex gap-4 align-items-center">
                     <h3>Liste des participants ({{ sortie.participant|length }}/{{ sortie.nbInscriptionsMax }})</h3>
                     {% if app.user and app.user not in sortie.participant and (sortie.etat.libelle == 'Ouverte') %}
-                    <form action="{{ path('sortie_inscrire', {'id': sortie.id}) }}" method="POST" style="display: inline;">
-                        <button type="submit" class="btn btn-sm btn-success">
-                            <i class="bi bi-person-plus"></i> S'inscrire
-                        </button>
+                        <form action="{{ path('sortie_inscrire', {'id': sortie.id}) }}" method="POST"
+                              style="display: inline;">
+                            <button type="submit" class="btn btn-sm btn-success">
+                                <i class="bi bi-person-plus"></i> S'inscrire
+                            </button>
                         </form>
                     {% endif %}
 
                     {% if app.user and app.user in sortie.participant and (sortie.etat.libelle == 'Ouverte' or sortie.etat.libelle == 'Clôturée') %}
-                    <form action="{{ path('sortie_desister', {'id': sortie.id}) }}" method="POST" style="display: inline;">
-                        <button type="submit " class="btn btn-sm btn-warning">
-                            <i class="bi bi-person-dash"></i> Se désister
-                        </button>
+                        <form action="{{ path('sortie_desister', {'id': sortie.id}) }}" method="POST"
+                              style="display: inline;">
+                            <button type="submit " class="btn btn-sm btn-warning">
+                                <i class="bi bi-person-dash"></i> Se désister
+                            </button>
                         </form>
                     {% endif %}
                 </div>
                 <table class="table table-striped">
                     <thead>
-                        <tr>
-                            <th>Pseudo</th>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Campus</th>
-                            <th>Actions</th>
-                        </tr>
+                    <tr>
+                        <th>Pseudo</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Campus</th>
+                        <th>Actions</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {% for participant in sortie.participant %}
-                            <tr>
-                                <td>{{ participant.pseudo }}</td>
-                                <td>{{ participant.nom }}</td>
-                                <td>{{ participant.prenom }}</td>
-                                <td>{{ participant.campus.nom }}</td>
-                                <td>
-                                    <a href="{{ path('app_profile', {'pseudo': participant.pseudo}) }}" class="btn btn-sm btn-info">
-                                        <i class="bi bi-person"></i> Voir le profil
-                                    </a>
-                                </td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td colspan="5" class="text-center">Aucun participant inscrit</td>
-                            </tr>
-                        {% endfor %}
+                    {% for participant in sortie.participant %}
+                        <tr>
+                            <td>{{ participant.pseudo }}</td>
+                            <td>{{ participant.nom }}</td>
+                            <td>{{ participant.prenom }}</td>
+                            <td>{{ participant.campus.nom }}</td>
+                            <td>
+                                <a href="{{ path('app_profile', {'pseudo': participant.pseudo}) }}"
+                                   class="btn btn-sm btn-info">
+                                    <i class="bi bi-person"></i> Voir le profil
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center">Aucun participant inscrit</td>
+                        </tr>
+                    {% endfor %}
                     </tbody>
                 </table>
             </div>

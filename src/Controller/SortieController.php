@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Etat;
+use App\Entity\Message;
 use App\Entity\Sortie;
 use App\Entity\User;
 use App\Form\AnnulationType;
+use App\Form\MessageType;
 use App\Form\SortieType;
 use App\Service\CheckerEtatSortieService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -76,17 +78,42 @@ final class SortieController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'sortie_show', methods: ['GET'])]
-    public function show(Sortie $sortie): Response
+    #[Route('/{id}', name: 'sortie_show', methods: ['GET', 'POST'])]
+    public function show(int $id, SortieRepository $sortieRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
         $this->checkerEtatSortie->checkAndUpdateStates();
+        $sortie = $sortieRepository->find($id);
         $form = $this->createForm(SortieType::class, $sortie, [
             'disabled' => true
         ]);
 
+        $message = new Message();
+
+        $messageForm = $this->createForm(MessageType::class, $message);
+
+        $messageForm->handleRequest($request);
+
+        if ($messageForm->isSubmitted() && $messageForm->isValid()) {
+            $message->setSortie($sortie);
+            $message->setCreator($this->getUser());
+            $message->setDateCreated(new \DateTimeImmutable());
+
+            $sortie->addMessage($message);
+
+            $entityManager->persist($message);
+            $entityManager->flush();
+            $this->addFlash("Success", "Votre message a bien été envoyé");
+
+            return $this->redirectToRoute('sortie_show', ['id' => $sortie->getId()]);
+        }
+
+        $messages = $entityManager->getRepository(Message::class)->findBy(['sortie' => $sortie]);
+
         return $this->render('sortie/show.html.twig', [
             'sortie' => $sortie,
             'form' => $form,
+            'messageForm' => $messageForm,
+            'messages' => $messages
         ]);
     }
 
