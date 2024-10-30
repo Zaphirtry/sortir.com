@@ -53,13 +53,19 @@ final class MessageController extends AbstractController
     #[Route('/{id}/edit', name: 'app_message_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Message $message, EntityManagerInterface $entityManager): Response
     {
+        if ($this->getUser() !== $message->getCreator()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas modifier ce message.');
+        }
+
         $form = $this->createForm(MessageType::class, $message);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $message->setDateModified(new \DateTimeImmutable());
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_message_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Le message a été modifié avec succès.');
+            return $this->redirectToRoute('sortie_show', ['id' => $message->getSortie()->getId()]);
         }
 
         return $this->render('message/edit.html.twig', [
@@ -71,11 +77,19 @@ final class MessageController extends AbstractController
     #[Route('/{id}', name: 'app_message_delete', methods: ['POST'])]
     public function delete(Request $request, Message $message, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $message->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($message);
-            $entityManager->flush();
+        if ($this->getUser() !== $message->getCreator()) {
+            throw $this->createAccessDeniedException('Vous ne pouvez pas supprimer ce message.');
         }
 
-        return $this->redirectToRoute('app_message_index', [], Response::HTTP_SEE_OTHER);
+        if ($this->isCsrfTokenValid('delete'.$message->getId(), $request->request->get('_token'))) {
+            $sortieId = $message->getSortie()->getId();
+            $entityManager->remove($message);
+            $entityManager->flush();
+            
+            $this->addFlash('success', 'Le message a été supprimé avec succès.');
+            return $this->redirectToRoute('sortie_show', ['id' => $sortieId]);
+        }
+
+        return $this->redirectToRoute('sortie_show', ['id' => $message->getSortie()->getId()]);
     }
 }
