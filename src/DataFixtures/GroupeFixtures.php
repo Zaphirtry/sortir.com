@@ -16,15 +16,15 @@ class GroupeFixtures extends Fixture implements DependentFixtureInterface
         $faker = Factory::create('fr_FR');
 
         // Récupérer tous les utilisateurs
-        for ($i = 0; $i < 10; $i++) { // Supposons que vous avez 10 utilisateurs
+        for ($i = 0; $i < 10; $i++) {
             $user = $this->getReference('user_' . $i);
 
             for ($j = 0; $j < 2; $j++) { // Chaque utilisateur a 2 groupes
                 $groupe = new Groupe();
                 $groupe->setNom($faker->words(2, true) . ' ' . $faker->emoji());
                 $groupe->addMembre($user);
-                $groupe->setDateCreated(new \DateTimeImmutable());
                 $groupe->setCreateur($user);
+                $groupe->setDateCreated(new \DateTimeImmutable());
 
                 // Ajouter au moins 2 autres membres au groupe
                 while ($groupe->getMembre()->count() < 3) {

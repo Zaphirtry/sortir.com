@@ -9,6 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+
 class GroupeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -23,7 +24,7 @@ class GroupeType extends AbstractType
                 'choice_label' => 'pseudo',
                 'multiple' => true,
                 'expanded' => true,
-                'attr' => ['class' => 'form-check'],
+                
             ]);
     }
 

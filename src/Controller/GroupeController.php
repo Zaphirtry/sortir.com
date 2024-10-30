@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Groupe;
+use App\Entity\User;
 use App\Form\GroupeType;
 use App\Repository\GroupeRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,16 +27,22 @@ final class GroupeController extends AbstractController
     }
 
     #[Route('/new', name: 'groupe_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, UserInterface $user): Response
     {
         $groupe = new Groupe();
+        $groupe->addMembre($user);
         $form = $this->createForm(GroupeType::class, $groupe);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $groupe->setDateCreated(new \DateTimeImmutable());
-            $groupe->setCreateur($this->getUser());
-            $groupe->addMembre($this->getUser());
+            $groupe->setCreateur($user);
+
+            // Ajoutez chaque membre sélectionné au groupe
+            foreach ($form->get('membre')->getData() as $membre) {
+                $groupe->addMembre($membre);
+            }
+
             $entityManager->persist($groupe);
             $entityManager->flush();
 
