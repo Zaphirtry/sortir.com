@@ -21,18 +21,16 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $faker = Factory::create('fr_FR');
 
         // Créer un utilisateur admin
-        $dateCreated = \DateTimeImmutable::createFromMutable($faker->dateTimeThisYear());
-
         $admin = new User();
         $admin->setPseudo('admin');
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setPassword($this->passwordHasher->hashPassword($admin, 'Admin2024'));
         $admin->setPrenom('Admin');
         $admin->setNom('Istrateur');
-        $admin->setTelephone(0642424242);
+        $admin->setTelephone('0' . $faker->numerify('########'));
         $admin->setEmail('admin@sortir.com');
-        $admin->setDateCreated($dateCreated);
-        $admin->setCampus($this->getReference('campus_1', Campus::class));
+        $admin->setDateCreated(new \DateTimeImmutable());
+        $admin->setCampus($this->getReference('campus_1'));
         $manager->persist($admin);
         $this->addReference('admin_user', $admin);
 
@@ -44,10 +42,10 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $user->setPassword($this->passwordHasher->hashPassword($user, 'Cours2024'));
             $user->setPrenom($faker->firstName());
             $user->setNom($faker->lastName());
-            $user->setTelephone($faker->numerify('0#########'));
+            $user->setTelephone('0' . $faker->numerify('########'));
             $user->setEmail("user$i@sortir.com");
-            $user->setDateCreated($dateCreated);
-            $user->setCampus($this->getReference('campus_' . $faker->numberBetween(1, 5), Campus::class));
+            $user->setDateCreated(new \DateTimeImmutable());
+            $user->setCampus($this->getReference('campus_' . $faker->numberBetween(1, 5)));
             $manager->persist($user);
             $this->addReference('user_' . $i, $user);
         }
