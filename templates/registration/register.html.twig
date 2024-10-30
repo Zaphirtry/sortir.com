@@ -1,12 +1,55 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Inscription{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
-  {{ form_errors(registrationForm) }}
-        {{ form_start(registrationForm) }}
-        {{ form_widget(registrationForm) }}
-        <button type="submit" class="btn btn-primary">Creer un compte</button>
-    {{ form_end(registrationForm) }}
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+
+        <!-- Formulaire Créer un compte -->
+        <div class="card shadow-sm mb-5">
+          <div class="card-header bg-primary text-white">
+            <h2 class="h4 mb-0">Créer un compte</h2>
+          </div>
+          <div class="card-body">
+            {{ form_start(registrationForm) }}
+            <div class="mb-3">
+              {{ form_errors(registrationForm) }}
+              {{ form_widget(registrationForm) }}
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Créer un compte</button>
+            {{ form_end(registrationForm) }}
+          </div>
+        </div>
+
+        <!-- Formulaire Import d'utilisateurs via CSV -->
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <h2 class="h4 mb-0">Import d'utilisateurs via CSV</h2>
+          </div>
+          <div class="card-body">
+            {{ form_start(csvForm) }}
+            <div class="mb-3">
+              {{ form_row(csvForm.csvFile, {
+                'label': 'Fichier CSV',
+                'attr': {'class': 'form-control'}
+              }) }}
+            </div>
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-upload"></i> Importer
+            </button>
+            {{ form_end(csvForm) }}
+
+            <div class="mt-4 p-3 bg-light rounded border">
+              <h3 class="h6">Format du fichier CSV attendu :</h3>
+              <p>Le fichier doit contenir les colonnes suivantes :</p>
+              <code>pseudo, email, prenom, nom, telephone, campus</code>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 {% endblock %}
