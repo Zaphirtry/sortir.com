@@ -78,7 +78,7 @@ final class SortieController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'sortie_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'sortie_show', methods: ['GET', 'POST'])]
     public function show(int $id, SortieRepository $sortieRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
         $this->checkerEtatSortie->checkAndUpdateStates();
