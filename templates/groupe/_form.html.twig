@@ -5,9 +5,18 @@
         {{ form_errors(form.nom) }}
     </div>
     <div class="form-group mb-3">
-        {{ form_label(form.membre, 'Membre', {'label_attr': {'class': 'form-label'}}) }}
-        {{ form_widget(form.membre, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(form.membre) }}
+        <label class="form-label">Membres</label>
+        <div class="d-flex flex-wrap">
+            {% for membre in form.membre %}
+                <div class="form-check me-3">
+                    {{ form_widget(membre, {'attr': {'class': 'form-check-input'}}) }}
+                    {{ form_label(membre, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                </div>
+            {% endfor %}
+        </div>
     </div>
-    <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+    <div class="d-flex justify-content-center gap-2">
+        <button class="btn btn-primary">{{ button_label|default('Créer') }}</button>
+    </div>
 {{ form_end(form) }}
+
