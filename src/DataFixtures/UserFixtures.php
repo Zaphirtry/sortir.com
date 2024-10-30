@@ -31,6 +31,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $admin->setEmail('admin@sortir.com');
         $admin->setDateCreated(new \DateTimeImmutable());
         $admin->setCampus($this->getReference('campus_1'));
+        $admin->setFilename('avatardefault.png');
         $manager->persist($admin);
         $this->addReference('admin_user', $admin);
 
@@ -46,6 +47,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             $user->setEmail("user$i@sortir.com");
             $user->setDateCreated(new \DateTimeImmutable());
             $user->setCampus($this->getReference('campus_' . $faker->numberBetween(1, 5)));
+            $user->setFilename('avatardefault.png');
             $manager->persist($user);
             $this->addReference('user_' . $i, $user);
         }

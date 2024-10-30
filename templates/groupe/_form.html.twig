@@ -5,10 +5,8 @@
         {{ form_errors(form.nom) }}
     </div>
     <div class="form-group mb-3">
-        {{ form_label(form.membre, 'Membres', {'label_attr': {'class': 'form-label'}}) }}
-        <div class="form-check">
-            {{ form_widget(form.membre) }}
-        </div>
+        {{ form_label(form.membre, 'Membre', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.membre, {'attr': {'class': 'form-control'}}) }}
         {{ form_errors(form.membre) }}
     </div>
     <button class="btn btn-primary">{{ button_label|default('Save') }}</button>

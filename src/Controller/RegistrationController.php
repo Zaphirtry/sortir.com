@@ -71,6 +71,9 @@ class RegistrationController extends AbstractController
                 } catch (\Exception $e) {
                     $this->addFlash('error', "Une erreur s'est produite lors du téléchargement de l'image. Veuillez réessayer.");
                 }
+            } else {
+                // Définir l'image par défaut si aucune image n'est téléchargée
+                $user->setFilename('avatardefault.png');
             }
 
             $entityManager->persist($user);
