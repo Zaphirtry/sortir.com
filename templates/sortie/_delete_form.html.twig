@@ -1,6 +1,6 @@
 <form method="post" action="{{ path('sortie_delete', {'id': sortie.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette sortie ?');" class="d-inline">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ sortie.id) }}">
-    <button type="submit" name="action" value="supprimer" class="btn btn-danger btn-lg shadow-sm rounded-pill">
+    <button type="submit" class="btn btn-danger btn-lg shadow-sm rounded-pill">
         <i class="bi bi-trash-fill me-2"></i>Supprimer la sortie
     </button>
 </form>
