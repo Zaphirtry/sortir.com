@@ -143,6 +143,8 @@ final class SortieController extends AbstractController
             $action = $request->request->get('action');
             if ($action === 'publier') {
                 $etat = $entityManager->getRepository(Etat::class)->findOneBy(['libelle' => Etat::OUVERTE]);
+            } elseif ($action === 'annuler') {
+                return $this->redirectToRoute('sortie_cancel', ['id' => $sortie->getId()]);
             } else {
                 $etat = $entityManager->getRepository(Etat::class)->findOneBy(['libelle' => Etat::CREEE]);
             }
