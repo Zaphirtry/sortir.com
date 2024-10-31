@@ -11,7 +11,8 @@
             </a>
         </div>
         <div class="card-body">
-            {{ include('groupe/_form.html.twig', {'button_label': 'Créer'}) }}
+            {{ include('groupe/_form.html.twig') }}
+            <a href="{{ path('groupe_list') }}" class="btn btn-secondary">Annuler</a>
         </div>
     </div>
 {% endblock %}
