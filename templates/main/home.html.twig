@@ -109,29 +109,19 @@
                                     {% endif %}
 
                                     {# Bouton Modifier #}
-                                  {% if sortie.organisateur == app.user %}
+                                  {% if sortie.organisateur == app.user or (is_granted('ROLE_ADMIN') and (sortie.etat.libelle == 'Ouverte' or sortie.etat.libelle == 'Clôturée')) %}
                                     <a href="{{ path('sortie_edit', {'id': sortie.id}) }}" class="btn btn-warning btn-sm shadow-sm">
                                       <i class="bi bi-pencil-square me-2"></i>Modifier
                                     </a>
                                   {% endif %}
 
-                                    {% if is_granted('ROLE_ADMIN') and (sortie.etat.libelle == 'Ouverte' or sortie.etat.libelle == 'Clôturée')%}
-                                        <a href="{{ path('sortie_edit', {'id': sortie.id}) }}" class="btn btn-warning btn-sm shadow-sm">
-                                            <i class="bi bi-pencil-square me-2"></i>Modifier
-                                        </a>
-                                    {% endif %}
 
-                                  {% if sortie.organisateur == app.user and (sortie.etat.libelle == 'Ouverte' or sortie.etat.libelle == 'Clôturée')%}
+                                  {% if sortie.organisateur == app.user and (sortie.etat.libelle == 'Ouverte' or sortie.etat.libelle == 'Clôturée') or (is_granted('ROLE_ADMIN') and (sortie.etat.libelle == 'Ouverte' or sortie.etat.libelle == 'Clôturée'))%}
                                     <a href="{{ path('sortie_cancel', {'id': sortie.id}) }}" class="btn btn-sm btn-warning">
                                       <i class="bi bi-calendar2-x"></i> Annuler
                                     </a>
                                   {% endif %}
 
-                                  {% if is_granted('ROLE_ADMIN') and (sortie.etat.libelle == 'Ouverte' or sortie.etat.libelle == 'Clôturée') %}
-                                    <a href="{{ path('sortie_cancel', {'id': sortie.id}) }}" class="btn btn-sm btn-warning">
-                                      <i class="bi bi-calendar2-x"></i> Annuler
-                                    </a>
-                                    {% endif %}
                                 </div>
                             </td>
                         </tr>

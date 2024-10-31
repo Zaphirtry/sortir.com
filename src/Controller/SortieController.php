@@ -120,10 +120,10 @@ final class SortieController extends AbstractController
     #[Route('/{id}/modifier', name: 'sortie_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
     {
-        if (!$this->getUser()) {
+        if (!$this->getUser()  ) {
             throw $this->createAccessDeniedException("Vous devez être connecté pour modifier une sortie");
         }
-        if ($this->getUser() !== $sortie->getOrganisateur()) {
+        if ($this->getUser() !== $sortie->getOrganisateur() && !$this->isGranted('ROLE_ADMIN')) {
             throw $this->createAccessDeniedException("Vous devez être le créateur de la sortie pour la modifier");
         }
 

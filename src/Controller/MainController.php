@@ -39,13 +39,16 @@ class MainController extends AbstractController
       $etatPasse = $etatRepository->findOneByLibelle('Passée');
       $etatArchivee = $etatRepository->findOneByLibelle('Archivée');
       $etatAnnulee = $etatRepository->findOneByLibelle('Annulée');
+      $etatCree = $etatRepository->findOneByLibelle('Créée');
 
       // Condition par défaut pour exclure les sorties passées
-      if (($etatPasse || $etatArchivee) && !$searchForm->isSubmitted()) {
+      if (($etatPasse || $etatArchivee || $etatCree) && !$searchForm->isSubmitted()) {
           $queryBuilder->andWhere('s.etat != :etatPasse')
               ->andWhere('s.etat != :etatArchivee')
+               ->andWhere('s.etat != :etatCree')
               ->setParameter('etatPasse', $etatPasse->getId())
-              ->setParameter('etatArchivee', $etatArchivee->getId());
+              ->setParameter('etatArchivee', $etatArchivee->getId())
+              ->setParameter('etatCree', $etatCree->getId());
       }
 
       if ($searchForm->isSubmitted() && $searchForm->isValid()) {
