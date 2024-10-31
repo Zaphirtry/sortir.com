@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/groupe')]
 final class GroupeController extends AbstractController
@@ -72,6 +73,15 @@ final class GroupeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $groupe->setDateModified(new \DateTimeImmutable());
 
+            // Vider la collection de membres avant d'ajouter les nouveaux membres
+            $groupe->getMembre()->clear();
+
+            // Ajoutez chaque membre sélectionné au groupe
+            foreach ($form->get('membre')->getData() as $membre) {
+                $groupe->addMembre($membre);
+            }
+
+            $entityManager->persist($groupe);
             $entityManager->flush();
 
             return $this->redirectToRoute('groupe_list', [], Response::HTTP_SEE_OTHER);
