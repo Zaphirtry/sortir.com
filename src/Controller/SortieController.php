@@ -160,12 +160,18 @@ final class SortieController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'sortie_delete', methods: ['POST'])]
+    #[Route('/{id}/supprimer', name: 'sortie_delete', methods: ['POST'])]
     public function delete(Request $request, Sortie $sortie, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete' . $sortie->getId(), $request->getPayload()->getString('_token'))) {
+        // Vérifier que l'utilisateur est soit l'organisateur soit un admin
+        if (!$this->isGranted('ROLE_ADMIN') && $this->getUser() !== $sortie->getOrganisateur()) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits pour supprimer cette sortie.');
+        }
+
+        if ($this->isCsrfTokenValid('delete'.$sortie->getId(), $request->request->get('_token'))) {
             $entityManager->remove($sortie);
             $entityManager->flush();
+            $this->addFlash('success', 'La sortie a été supprimée avec succès.');
         }
 
         return $this->redirectToRoute('main_home', [], Response::HTTP_SEE_OTHER);
